@@ -182,11 +182,11 @@ def receive_file(file, rows_completed=0):
                     entry[key] = str(value)
     
     # Load the entire flights table into a list of dictionaries (db_1)
-    print("Start compare:",time.time)
+    print("Start compare:",time.time())
     db_1 = [dict(row) for row in app_tables.flights.search()]
     print("table size:",len(db_1))
     # db_1 = [row.to_dict() for row in app_tables.flights.search()]
-    print("Table fast now:",time.time)
+    print("Table fast now:",time.time())
     # Remove entries in db_2 that already exist in db_1
     db_2 = data_list
     print("file size pre-strip:",len(db_2))
@@ -195,7 +195,7 @@ def receive_file(file, rows_completed=0):
         if entry not in db_1
     ]
     print("file size post-strip:",len(db_2))
-    print("End compare:",time.time)
+    print("End compare:",time.time())
     total_rows = len(db_2)
     rows_processed = rows_completed
 
@@ -210,9 +210,9 @@ def receive_file(file, rows_completed=0):
             }
 
         entry = db_2[i]
-        print("Add a row start:",time.time)
+        print("Add a row start:",time.time())
         app_tables.flights.add_row(**entry)
-        print("Add a row end:",time.time)
+        print("Add a row end:",time.time())
         rows_processed += 1
 
     # All rows completed
