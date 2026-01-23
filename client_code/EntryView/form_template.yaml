@@ -1,0 +1,57 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'MHWRRD,PUZFVR'}
+    name: spacer_1
+    properties: {height: 32}
+    type: Spacer
+  - data_bindings:
+    - {code: 'self.item[''title'']', property: text}
+    layout_properties: {grid_position: 'MHWRRD,XGUAPS WAARJG,UDUFKC'}
+    name: title_label
+    properties: {align: left, background: '', bold: false, border: '', font: '', font_size: null, foreground: '', icon: '', icon_align: left, italic: false, role: title, spacing_above: small, spacing_below: small, text: '', tooltip: '', underline: false, visible: true}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''category''][''name'']', property: text}
+    layout_properties: {grid_position: 'MHWRRD,XGUAPS WAARJG,VMBHUP'}
+    name: category_label
+    properties: {align: left, background: '', bold: true, border: '', font: '', font_size: null, foreground: '', icon: '', icon_align: left, italic: false, role: null, spacing_above: small, spacing_below: small, text: '', tooltip: '', underline: false, visible: true}
+    type: Label
+  - components:
+    - event_bindings: {click: edit_entry_button_click}
+      layout_properties: {grid_position: 'WAARJG,BDIJVO'}
+      name: edit_entry_button
+      properties: {align: center, background: '', bold: false, border: '', enabled: true, font: '', font_size: null, foreground: '', icon: 'fa:pencil-square', icon_align: left, italic: false, role: filled-button, spacing_above: small, spacing_below: small, text: '', tooltip: '', underline: false, visible: true}
+      type: Button
+    - event_bindings: {click: delete_entry_button_click}
+      layout_properties: {}
+      name: delete_entry_button
+      properties: {align: center, background: 'theme:Error', bold: false, border: '', enabled: true, font: '', font_size: null, foreground: '', icon: 'fa:trash', icon_align: left, italic: false, role: filled-button, spacing_above: small, spacing_below: small, text: '', tooltip: '', underline: false, visible: true}
+      type: Button
+    layout_properties: {grid_position: 'MHWRRD,XGUAPS WAARJG,TAHOSC'}
+    name: flow_panel_1
+    properties: {align: right, background: '', border: '', foreground: '', role: null, spacing: medium, spacing_above: small, spacing_below: small, tooltip: '', visible: true}
+    type: FlowPanel
+  - data_bindings:
+    - {code: 'self.item[''image'']', property: source}
+    layout_properties: {grid_position: 'MHWRRD,XGUAPS HJGZPT,YQCVDA'}
+    name: image_1
+    properties: {background: '', border: '', display_mode: fill_width, foreground: '', height: '200', horizontal_align: center, role: null, source: '', spacing_above: small, spacing_below: small, tooltip: '', vertical_align: center, visible: true}
+    type: Image
+  - data_bindings:
+    - {code: 'self.item[''content'']', property: text}
+    layout_properties: {grid_position: 'MHWRRD,XGUAPS HJGZPT,FXYVIH'}
+    name: content_label
+    properties: {}
+    type: Label
+  - layout_properties: {grid_position: 'MHWRRD,UGUKIZ'}
+    name: spacer_2
+    properties: {height: 32}
+    type: Spacer
+  layout_properties: {grid_position: 'PAFXYP,FWHHIW'}
+  name: column_panel_1
+  properties: {background: '', border: '', col_spacing: medium, col_widths: '{"UDUFKC":29,"VMBHUP":13,"YQCVDA":30,"FXYVIH":30,"TAHOSC":15,"PUZFVR":3,"XGUAPS":74,"UGUKIZ":3}', foreground: '', role: elevated-card, spacing_above: small, spacing_below: small, tooltip: '', visible: true, wrap_on: mobile}
+  type: ColumnPanel
+container:
+  properties: {col_widths: '{}'}
+  type: ColumnPanel
+is_package: true

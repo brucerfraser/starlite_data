@@ -1,0 +1,46 @@
+components:
+- components:
+  - event_bindings: {click: add_entry_button_click}
+    layout_properties: {grid_position: 'CBFHGL,NKFPMX'}
+    name: add_entry_button
+    properties:
+      align: center
+      background: ''
+      bold: false
+      border: ''
+      enabled: true
+      font: ''
+      font_size: null
+      foreground: ''
+      icon: fa:plus-circle
+      icon_align: left
+      italic: false
+      role: filled-button
+      spacing_above: small
+      spacing_below: large
+      text: |
+        Add an Entry
+      tooltip: ''
+      underline: false
+      visible: true
+    type: Button
+  - layout_properties: {grid_position: 'XRGDXR,JQCHKL', slot: title}
+    name: entries_panel
+    properties: {background: '', border: '', foreground: '', item_template: EntryView, items: null, role: null, spacing_above: small, spacing_below: small, tooltip: '', visible: true}
+    type: RepeatingPanel
+  layout_properties: {slot: default}
+  name: content_panel
+  properties: {col_widths: '{}'}
+  type: ColumnPanel
+- layout_properties: {slot: nav-right}
+  name: navbar_links
+  properties: {}
+  type: FlowPanel
+- layout_properties: {slot: title}
+  name: label_1
+  properties: {align: left, background: '', bold: false, border: '', font: '', font_size: null, foreground: '', icon: '', icon_align: left, italic: false, role: title, spacing_above: small, spacing_below: small, text: Database-backed app, tooltip: '', underline: false, visible: true}
+  type: Label
+container:
+  properties: {html: '@theme:standard-page.html'}
+  type: HtmlTemplate
+is_package: true

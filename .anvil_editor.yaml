@@ -1,0 +1,14 @@
+unique_ids:
+  assets:
+    standard-page.html: ZJZJ5QIRYGBNKV2UF22CFMCG6IVAXZFB
+    theme.css: AODQ72BOWB6KZMEX2CIJL5C4PBHWZTDN
+  forms:
+    EntryEdit: '1669200622439827529178778.553'
+    EntryView: '1669300624421763057438685.8186'
+    Homepage: NCYTHO2P7V27A7TV37YAWUGB52NDDGSI
+    Homepage.ItemTemplate1: '1669137087735680125911714.4045'
+    Homepage.ItemTemplate2: '1669308484239217012606640.32886'
+  modules: {}
+  scripts: {}
+  server_modules:
+    ServerModule1: '1669297017291241838743870.52295'
