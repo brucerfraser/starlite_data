@@ -108,6 +108,9 @@ def receive_file(file, rows_completed=0):
         # Replace NaN values with None for better JSON serialization
         df = df.where(pd.notnull(df), None)
 
+        # Ensure all column names are strings (pandas sometimes creates non-string column names)
+        df.columns = [str(col) for col in df.columns]
+
         # Convert to list of dictionaries
         try:
             data_list = df.to_dict('records')
