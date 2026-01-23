@@ -9,12 +9,12 @@ import io
 @anvil.server.callable
 def save_file(file, description):
     """Saves a file along with its description to the database."""
-    app_tables.Flights.add_row(file=file, description=description)
+    app_tables.flights.add_row(file=file, description=description)
 
 @anvil.server.callable
 def receive_file(file):
     """
-    Processes Excel (.xls, .xlsx) or CSV files and loads entries into Flights table.
+    Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
     Only adds entries that don't already exist (checks all values for exact match).
     
@@ -103,11 +103,11 @@ def receive_file(file):
         total_rows = len(data_list)
         added_rows = 0
         
-        # Load each entry into the Flights table if it doesn't already exist
+        # Load each entry into the flights table if it doesn't already exist
         for entry in data_list:
             # Check if this exact entry already exists in the database
             # Build a query that checks all field values
-            existing = app_tables.Flights.search()
+            existing = app_tables.flights.search()
             
             # Check each row for exact match
             entry_exists = False
@@ -136,7 +136,7 @@ def receive_file(file):
             
             # Add the entry if it doesn't exist
             if not entry_exists:
-                app_tables.Flights.add_row(**entry)
+                app_tables.flights.add_row(**entry)
                 added_rows += 1
         
         return {'total_rows': total_rows, 'added_rows': added_rows}
