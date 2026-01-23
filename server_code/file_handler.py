@@ -101,6 +101,61 @@ def receive_file(file):
         
         # Convert to list of dictionaries
         data_list = df.to_dict('records')
+        
+        # Process each entry to ensure proper data types
+        for entry in data_list:
+            # Convert FltDate to date object
+            if 'FltDate' in entry and entry['FltDate'] is not None:
+                try:
+                    # Handle various date formats
+                    date_value = entry['FltDate']
+                    if isinstance(date_value, str):
+                        # Try parsing common date formats
+                        for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d']:
+                            try:
+                                entry['FltDate'] = datetime.strptime(date_value, fmt).date()
+                                break
+                            except ValueError:
+                                continue
+                        else:
+                            # If no format matched, try pandas parser
+                            entry['FltDate'] = pd.to_datetime(date_value).date()
+                    elif isinstance(date_value, datetime):
+                        entry['FltDate'] = date_value.date()
+                    elif hasattr(date_value, 'date'):
+                        entry['FltDate'] = date_value.date()
+                except Exception:
+                    # If conversion fails, set to None
+                    entry['FltDate'] = None
+            
+            # Convert Air Time to float or None
+            if 'Air Time' in entry:
+                try:
+                    val = entry['Air Time']
+                    if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
+                        entry['Air Time'] = None
+                    else:
+                        entry['Air Time'] = float(val)
+                except (ValueError, TypeError):
+                    entry['Air Time'] = None
+            
+            # Convert Block Time to float or None
+            if 'Block Time' in entry:
+                try:
+                    val = entry['Block Time']
+                    if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
+                        entry['Block Time'] = None
+                    else:
+                        entry['Block Time'] = float(val)
+                except (ValueError, TypeError):
+                    entry['Block Time'] = None
+            
+            # Convert all other fields to strings (except None values)
+            for key, value in entry.items():
+                if key not in ['FltDate', 'Air Time', 'Block Time']:
+                    if value is not None:
+                        entry[key] = str(value)
+        
         total_rows = len(data_list)
         added_rows = 0
         
