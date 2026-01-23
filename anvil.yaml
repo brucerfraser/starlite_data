@@ -36,32 +36,32 @@ db_schema:
   flights:
     client: none
     columns:
-    - admin_ui: {order: 0, width: 200}
+    - admin_ui: {width: 200}
       name: FltDate
       type: date
-    - admin_ui: {order: 1, width: 200}
+    - admin_ui: {width: 200}
       name: ACType
       type: string
-    - admin_ui: {order: 2, width: 200}
+    - admin_ui: {width: 200}
       name: Rego
       type: string
-    - admin_ui: {order: 3, width: 200}
+    - admin_ui: {width: 200}
       name: CFF_Ad_Hoc_Client_Name
       type: string
-    - admin_ui: {order: 4, width: 200}
+    - admin_ui: {width: 200}
       name: CFF_Client
       type: string
-    - admin_ui: {order: 5, width: 200}
+    - admin_ui: {width: 200}
       name: CFF_Base_of_Operation
       type: string
-    - admin_ui: {order: 6, width: 200}
+    - admin_ui: {width: 200}
       name: Air Time
       type: number
-    - admin_ui: {order: 7, width: 200}
+    - admin_ui: {width: 200}
       name: Block Time
       type: number
     server: full
-    title: Flights
+    title: flights
 dependencies: []
 name: Database-backed app
 package_name: Starlite_Data
