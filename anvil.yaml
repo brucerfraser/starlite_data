@@ -33,6 +33,11 @@ db_schema:
       type: link_single
     server: full
     title: Entries
+  flights:
+    client: none
+    columns: []
+    server: full
+    title: Flights
 dependencies: []
 name: Database-backed app
 package_name: News_App

@@ -24,6 +24,10 @@ components:
       underline: false
       visible: true
     type: Button
+  - layout_properties: {grid_position: 'CBFHGL,YEVQPD'}
+    name: file_loader_1
+    properties: {}
+    type: FileLoader
   - layout_properties: {grid_position: 'XRGDXR,JQCHKL', slot: title}
     name: entries_panel
     properties: {background: '', border: '', foreground: '', item_template: EntryView, items: null, role: null, spacing_above: small, spacing_below: small, tooltip: '', visible: true}
