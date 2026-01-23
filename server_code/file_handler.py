@@ -102,8 +102,15 @@ def receive_file(file):
         # Convert to list of dictionaries
         data_list = df.to_dict('records')
         
-        # Process each entry to ensure proper data types
+        # Process each entry to ensure proper data types and remove NaN values
         for entry in data_list:
+            # First pass: Check for and replace any remaining NaN values
+            for key in list(entry.keys()):
+                val = entry[key]
+                # Check if value is NaN (works for both float NaN and pandas NaT)
+                if val is not None and ((isinstance(val, float) and pd.isna(val)) or pd.isna(val)):
+                    entry[key] = None
+            
             # Convert FltDate to date object
             if 'FltDate' in entry and entry['FltDate'] is not None:
                 try:
@@ -128,27 +135,31 @@ def receive_file(file):
                     # If conversion fails, set to None
                     entry['FltDate'] = None
             
-            # Convert Air Time to float or None
+            # Convert Air Time to float or 0.0 if None/NaN
             if 'Air Time' in entry:
                 try:
                     val = entry['Air Time']
                     if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                        entry['Air Time'] = None
+                        entry['Air Time'] = 0.0
+                    elif isinstance(val, float) and pd.isna(val):
+                        entry['Air Time'] = 0.0
                     else:
                         entry['Air Time'] = float(val)
                 except (ValueError, TypeError):
-                    entry['Air Time'] = None
+                    entry['Air Time'] = 0.0
             
-            # Convert Block Time to float or None
+            # Convert Block Time to float or 0.0 if None/NaN
             if 'Block Time' in entry:
                 try:
                     val = entry['Block Time']
                     if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                        entry['Block Time'] = None
+                        entry['Block Time'] = 0.0
+                    elif isinstance(val, float) and pd.isna(val):
+                        entry['Block Time'] = 0.0
                     else:
                         entry['Block Time'] = float(val)
                 except (ValueError, TypeError):
-                    entry['Block Time'] = None
+                    entry['Block Time'] = 0.0
             
             # Convert all other fields to strings (except None values)
             for key, value in entry.items():
