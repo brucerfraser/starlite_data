@@ -100,11 +100,6 @@ def receive_file(file, rows_completed=0):
     if df is None or df.empty:
         return {'total_rows': 0, 'added_rows': 0}
 
-    # Debugging: Check the DataFrame structure
-    print("DataFrame columns:", df.columns)
-    print("DataFrame preview:", df.head())
-    print("DataFrame dtypes:")
-    print(df.dtypes)
 
     # Replace NaN values with None for better JSON serialization
     df = df.where(pd.notnull(df), None)
@@ -118,6 +113,7 @@ def receive_file(file, rows_completed=0):
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
+        print(data_list[0:5])
     except Exception as e:
         raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
