@@ -25,7 +25,7 @@ class Homepage(HomepageTemplate):
   def upload(self,file,**event_args):
     """This method is called when a file is loaded into the FileLoader"""
     if file is not None:
-      self.file_loader_1.file = None
+      self.file_loader_1.clear()
       rows_completed = 0
       complete = False
       total_rows = 0
