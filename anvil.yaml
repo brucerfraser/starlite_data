@@ -63,7 +63,8 @@ db_schema:
     server: full
     title: flights
 dependencies: []
-name: Database-backed app
+metadata: {title: Starlite Data}
+name: Starlite Data
 package_name: Starlite_Data
 renamed: true
 runtime_options:
@@ -73,7 +74,7 @@ runtime_options:
   server_version: python3-sandbox
   version: 2
 services:
-- client_config: {}
+- client_config: {enable_v2: true}
   server_config: {}
   source: /runtime/services/tables.yml
 - client_config: {}
