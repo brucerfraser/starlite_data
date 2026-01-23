@@ -113,7 +113,6 @@ def receive_file(file, rows_completed=0):
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
-        print(data_list[0:5])
     except Exception as e:
         raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
