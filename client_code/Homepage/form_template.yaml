@@ -24,7 +24,8 @@ components:
       underline: false
       visible: true
     type: Button
-  - layout_properties: {grid_position: 'CBFHGL,YEVQPD'}
+  - event_bindings: {}
+    layout_properties: {grid_position: 'CBFHGL,YEVQPD'}
     name: file_loader_1
     properties: {}
     type: FileLoader
