@@ -2,6 +2,7 @@ import anvil.email
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from anvil.tables import query as q
 import anvil.server
 import pandas as pd
 import io
@@ -183,7 +184,9 @@ def receive_file(file, rows_completed=0):
     
     # Load the entire flights table into a list of dictionaries (db_1)
     print("Start compare:",time.time())
-    db_1 = [dict(row) for row in app_tables.flights.search()]
+    col_names = [c['name'] for c in app_tables.flights.list_columns()]
+
+    db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
     print("table size:",len(db_1))
     # db_1 = [row.to_dict() for row in app_tables.flights.search()]
     print("Table fast now:",time.time())
