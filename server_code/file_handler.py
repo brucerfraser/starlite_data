@@ -97,15 +97,22 @@ def receive_file(file, rows_completed=0):
                         new_columns.append(str(col).strip())
                 df.columns = new_columns
         
-        # Handle empty dataframe
-        if df is None or len(df) == 0:
+        # Ensure the DataFrame is valid before converting to a list of dictionaries
+        if df is None or df.empty:
             return {'total_rows': 0, 'added_rows': 0}
-        
+
+        # Log the DataFrame structure for debugging (optional)
+        print("DataFrame columns:", df.columns)
+        print("DataFrame preview:", df.head())
+
         # Replace NaN values with None for better JSON serialization
         df = df.where(pd.notnull(df), None)
-        
+
         # Convert to list of dictionaries
-        data_list = df.to_dict('records')
+        try:
+            data_list = df.to_dict('records')
+        except Exception as e:
+            raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
         
         # Process each entry to ensure proper data types and remove NaN values
         for entry in data_list:
