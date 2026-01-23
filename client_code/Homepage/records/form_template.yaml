@@ -1,0 +1,9 @@
+components:
+- layout_properties: {full_width_row: true, grid_position: 'YNCGXC,YOLKQB'}
+  name: rp_records
+  properties: {item_template: Homepage.records.ItemTemplate1}
+  type: RepeatingPanel
+container:
+  event_bindings: {}
+  type: ColumnPanel
+is_package: true
