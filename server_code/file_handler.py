@@ -212,17 +212,18 @@ def receive_file(file, rows_completed=0):
                 'rows_processed': rows_processed
             }
 
-        entry = db_2[i]
-        print("Add a row start:",time.time())
-        app_tables.flights.add_row(**entry)
-        print("Add a row end:",time.time())
-        rows_processed += 1
+        app_tables.flights.add_rows(db_2)
+        # entry = db_2[i]
+        # print("Add a row start:",time.time())
+        # app_tables.flights.add_row(**entry)
+        # print("Add a row end:",time.time())
+        # rows_processed += 1
 
     # All rows completed
     return {
         'complete': True,
         'total_rows': total_rows,
-        'rows_processed': rows_processed
+        'rows_processed': len(db_2)
     }
 
 @anvil.email.handle_message
