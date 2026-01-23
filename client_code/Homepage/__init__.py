@@ -42,7 +42,7 @@ class Homepage(HomepageTemplate):
     # Refresh entry to remove the deleted entry from the Homepage
     self.refresh_entries()
 
-  @handle("self.file_loader_1", "change")
+  @handle("file_loader_1", "change")
   def upload(self,file,**event_args):
     """This method is called when a file is loaded into the FileLoader"""
     if file is not None:
