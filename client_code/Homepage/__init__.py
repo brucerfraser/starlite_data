@@ -17,9 +17,7 @@ class Homepage(HomepageTemplate):
   
     
   def refresh_entries(self):
-     # Load existing entries from the Data Table, 
-     # and display them in the RepeatingPanel
-     # self.entries_panel.items = anvil.server.call('get_entries')
+     print(anvil.server.call('flight_size'))
      pass
 
 
@@ -27,6 +25,7 @@ class Homepage(HomepageTemplate):
   def upload(self,file,**event_args):
     """This method is called when a file is loaded into the FileLoader"""
     if file is not None:
+      self.file_loader_1.file = None
       rows_completed = 0
       complete = False
       total_rows = 0

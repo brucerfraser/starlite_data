@@ -9,9 +9,8 @@ from datetime import datetime
 import time
 
 @anvil.server.callable
-def save_file(file, description):
-    """Saves a file along with its description to the database."""
-    app_tables.flights.add_row(file=file, description=description)
+def flight_size():
+    return len(app_tables.flights.search())
 
 @anvil.server.callable
 def receive_file(file, rows_completed=0):
