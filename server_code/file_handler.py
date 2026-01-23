@@ -172,11 +172,20 @@ def receive_file(file, rows_completed=0):
                     if value is not None:
                         entry[key] = str(value)
         
-        total_rows = len(data_list)
+        # Load the entire flights table into a list of dictionaries (db_1)
+        db_1 = [row.to_dict() for row in app_tables.flights.search()]
+
+        # Remove entries in db_2 that already exist in db_1
+        db_2 = data_list
+        db_2 = [
+            entry for entry in db_2
+            if entry not in db_1
+        ]
+
+        total_rows = len(db_2)
         rows_processed = rows_completed
-        
-        # Load each entry into the flights table if it doesn't already exist
-        # Start from rows_completed to continue where we left off
+
+        # Add remaining entries in db_2 to the flights table
         for i in range(rows_completed, total_rows):
             # Check timeout - return early if approaching limit
             if time.time() - start_time > timeout_limit:
@@ -185,44 +194,11 @@ def receive_file(file, rows_completed=0):
                     'total_rows': total_rows,
                     'rows_processed': rows_processed
                 }
-            
-            entry = data_list[i]
-            
-            # Check if this exact entry already exists in the database
-            # Build a query that checks all field values
-            existing = app_tables.flights.search()
-            
-            # Check each row for exact match
-            entry_exists = False
-            for row in existing:
-                # Compare all values
-                match = True
-                for key, value in entry.items():
-                    # Get the corresponding value from the database row
-                    db_value = row[key] if key in row else None
-                    
-                    # Handle comparison - treat None and NaN as equal
-                    if value is None or (isinstance(value, float) and pd.isna(value)):
-                        if not (db_value is None or (isinstance(db_value, float) and pd.isna(db_value))):
-                            match = False
-                            break
-                    elif db_value is None or (isinstance(db_value, float) and pd.isna(db_value)):
-                        match = False
-                        break
-                    elif value != db_value:
-                        match = False
-                        break
-                
-                if match:
-                    entry_exists = True
-                    break
-            
-            # Add the entry if it doesn't exist
-            if not entry_exists:
-                app_tables.flights.add_row(**entry)
-            
+
+            entry = db_2[i]
+            app_tables.flights.add_row(**entry)
             rows_processed += 1
-        
+
         # All rows completed
         return {
             'complete': True,
