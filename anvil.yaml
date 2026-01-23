@@ -40,11 +40,11 @@ db_schema:
     title: Flights
 dependencies: []
 name: Database-backed app
-package_name: News_App
+package_name: Starlite_Data
 renamed: true
 runtime_options:
   client_version: '3'
-  server_spec: {base: python310-minimal}
+  server_spec: {base: python310-standard}
   server_spec_disabled: {base: python310-minimal, requirements: ''}
   server_version: python3-sandbox
   version: 2
