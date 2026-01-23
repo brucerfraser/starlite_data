@@ -6,6 +6,7 @@ import anvil.server
 import pandas as pd
 import io
 from datetime import datetime
+import time
 
 @anvil.server.callable
 def save_file(file, description):
@@ -13,18 +14,22 @@ def save_file(file, description):
     app_tables.flights.add_row(file=file, description=description)
 
 @anvil.server.callable
-def receive_file(file):
+def receive_file(file, rows_completed=0):
     """
     Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
     Only adds entries that don't already exist (checks all values for exact match).
+    Works in chunks to avoid timeout - returns after 20 seconds to allow continuation.
     
     Args:
         file: Anvil Media object containing the uploaded file
+        rows_completed: Number of rows already processed (for continuation)
         
     Returns:
-        dict: {'total_rows': int, 'added_rows': int}
+        dict: {'complete': bool, 'total_rows': int, 'rows_processed': int}
     """
+    start_time = time.time()
+    timeout_limit = 20  # seconds
     try:
         # Get file content as bytes
         file_bytes = file.get_bytes()
@@ -168,10 +173,21 @@ def receive_file(file):
                         entry[key] = str(value)
         
         total_rows = len(data_list)
-        added_rows = 0
+        rows_processed = rows_completed
         
         # Load each entry into the flights table if it doesn't already exist
-        for entry in data_list:
+        # Start from rows_completed to continue where we left off
+        for i in range(rows_completed, total_rows):
+            # Check timeout - return early if approaching limit
+            if time.time() - start_time > timeout_limit:
+                return {
+                    'complete': False,
+                    'total_rows': total_rows,
+                    'rows_processed': rows_processed
+                }
+            
+            entry = data_list[i]
+            
             # Check if this exact entry already exists in the database
             # Build a query that checks all field values
             existing = app_tables.flights.search()
@@ -204,9 +220,15 @@ def receive_file(file):
             # Add the entry if it doesn't exist
             if not entry_exists:
                 app_tables.flights.add_row(**entry)
-                added_rows += 1
+            
+            rows_processed += 1
         
-        return {'total_rows': total_rows, 'added_rows': added_rows}
+        # All rows completed
+        return {
+            'complete': True,
+            'total_rows': total_rows,
+            'rows_processed': rows_processed
+        }
         
     except Exception as e:
         error_msg = f"Error processing file: {str(e)}"
