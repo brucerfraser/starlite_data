@@ -202,27 +202,12 @@ def receive_file(file, rows_completed=0):
     total_rows = len(db_2)
     rows_processed = rows_completed
 
-    # Add remaining entries in db_2 to the flights table
-    for i in range(rows_completed, total_rows):
-        # Check timeout - return early if approaching limit
-        if time.time() - start_time > timeout_limit:
-            return {
-                'complete': False,
-                'total_rows': total_rows,
-                'rows_processed': rows_processed
-            }
-
-        app_tables.flights.add_rows(db_2)
-        # entry = db_2[i]
-        # print("Add a row start:",time.time())
-        # app_tables.flights.add_row(**entry)
-        # print("Add a row end:",time.time())
-        # rows_processed += 1
-
-    # All rows completed
+    
+    app_tables.flights.add_rows(db_2)
+    
     return {
         'complete': True,
-        'total_rows': total_rows,
+        'total_rows': len(data_list),
         'rows_processed': len(db_2)
     }
 
