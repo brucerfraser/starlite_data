@@ -101,15 +101,20 @@ def receive_file(file, rows_completed=0):
         if df is None or df.empty:
             return {'total_rows': 0, 'added_rows': 0}
 
-        # Log the DataFrame structure for debugging (optional)
+        # Debugging: Check the DataFrame structure
         print("DataFrame columns:", df.columns)
         print("DataFrame preview:", df.head())
+        print("DataFrame dtypes:")
+        print(df.dtypes)
 
         # Replace NaN values with None for better JSON serialization
         df = df.where(pd.notnull(df), None)
 
-        # Ensure all column names are strings (pandas sometimes creates non-string column names)
+        # Ensure all column names are strings
         df.columns = [str(col) for col in df.columns]
+
+        # Convert all columns to strings to ensure consistency
+        df = df.astype(str)
 
         # Convert to list of dictionaries
         try:
