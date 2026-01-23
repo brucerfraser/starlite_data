@@ -10,8 +10,9 @@ from datetime import datetime
 import time
 
 @anvil.server.callable
-def flight_size():
-    return len(app_tables.flights.search())
+def flight_records():
+  col_names = [c['name'] for c in app_tables.flights.list_columns()]
+  return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
 @anvil.server.callable
 def receive_file(file, rows_completed=0):

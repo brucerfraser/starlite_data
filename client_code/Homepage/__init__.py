@@ -5,12 +5,14 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..EntryEdit import EntryEdit
+from .. import local_data
 
 class Homepage(HomepageTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     # Any code you write here will run when the form opens.
+    local_data.load_up()
     self.refresh_entries()
       # Set an event handler on the RepeatingPanel (our 'entries_panel')
 
@@ -42,4 +44,10 @@ class Homepage(HomepageTemplate):
           alert(f"File processed successfully!\n\nTotal rows in file: {total_rows}")
         else:
           print(f"Rows completed: {rows_completed}")
+
+  @handle("btn_records", "click")
+  def btn_records_click(self, **event_args):
+    from .records import records
+    self.content_panel.clear()
+    self.content_panel.add_component(records())
 

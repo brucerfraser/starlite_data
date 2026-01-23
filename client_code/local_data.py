@@ -9,5 +9,5 @@ FLIGHTS = []
 
 def load_up():
   global FLIGHTS
-  for r in app_tables.flights.search():
-    FLIGHTS.append(dict(r))
+  FLIGHTS = anvil.server.call('flight_records')
+  

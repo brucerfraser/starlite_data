@@ -1,0 +1,13 @@
+components:
+- layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,TZSKRY'}
+  name: graphs
+  properties: {}
+  type: ColumnPanel
+- layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,BQGHFC'}
+  name: controls
+  properties: {}
+  type: ColumnPanel
+container:
+  properties: {col_widths: '{"TZSKRY":45,"BQGHFC":15}'}
+  type: ColumnPanel
+is_package: true
