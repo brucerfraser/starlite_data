@@ -46,6 +46,8 @@ class Homepage(HomepageTemplate):
   def upload(self,file,**event_args):
     """This method is called when a file is loaded into the FileLoader"""
     if file is not None:
-      anvil.server.call('receive_file', file)
-      print("completed upload")
+      result = anvil.server.call('receive_file', file)
+      total = result['total_rows']
+      added = result['added_rows']
+      alert(f"File processed successfully!\n\nTotal rows in file: {total}\nRows added to database: {added}")
 

@@ -14,15 +14,15 @@ def save_file(file, description):
 @anvil.server.callable
 def receive_file(file):
     """
-    Processes Excel (.xls, .xlsx) or CSV files and converts to list of dictionaries.
+    Processes Excel (.xls, .xlsx) or CSV files and loads entries into Flights table.
     Handles missing headers by creating default column names.
-    Prints first 10 rows to console.
+    Only adds entries that don't already exist (checks all values for exact match).
     
     Args:
         file: Anvil Media object containing the uploaded file
         
     Returns:
-        list: List of dictionaries representing the data
+        dict: {'total_rows': int, 'added_rows': int}
     """
     try:
         # Get file content as bytes
@@ -93,36 +93,56 @@ def receive_file(file):
         
         # Handle empty dataframe
         if df is None or len(df) == 0:
-            print("Warning: File is empty or could not be read")
-            return []
+            return {'total_rows': 0, 'added_rows': 0}
         
         # Replace NaN values with None for better JSON serialization
         df = df.where(pd.notnull(df), None)
         
         # Convert to list of dictionaries
         data_list = df.to_dict('records')
+        total_rows = len(data_list)
+        added_rows = 0
         
-        # Print first 10 rows to console
-        print(f"\n{'='*60}")
-        print(f"File processed: {file.name if hasattr(file, 'name') else 'Unknown'}")
-        print(f"Total rows: {len(data_list)}")
-        print(f"Columns: {list(df.columns)}")
-        print(f"{'='*60}")
-        print("First 10 rows:")
-        print(f"{'-'*60}")
+        # Load each entry into the Flights table if it doesn't already exist
+        for entry in data_list:
+            # Check if this exact entry already exists in the database
+            # Build a query that checks all field values
+            existing = app_tables.Flights.search()
+            
+            # Check each row for exact match
+            entry_exists = False
+            for row in existing:
+                # Compare all values
+                match = True
+                for key, value in entry.items():
+                    # Get the corresponding value from the database row
+                    db_value = row[key] if key in row else None
+                    
+                    # Handle comparison - treat None and NaN as equal
+                    if value is None or (isinstance(value, float) and pd.isna(value)):
+                        if not (db_value is None or (isinstance(db_value, float) and pd.isna(db_value))):
+                            match = False
+                            break
+                    elif db_value is None or (isinstance(db_value, float) and pd.isna(db_value)):
+                        match = False
+                        break
+                    elif value != db_value:
+                        match = False
+                        break
+                
+                if match:
+                    entry_exists = True
+                    break
+            
+            # Add the entry if it doesn't exist
+            if not entry_exists:
+                app_tables.Flights.add_row(**entry)
+                added_rows += 1
         
-        for i, row in enumerate(data_list[:10], 1):
-            print(f"\nRow {i}:")
-            for key, value in row.items():
-                print(f"  {key}: {value}")
-        
-        print(f"{'='*60}\n")
-        
-        return data_list
+        return {'total_rows': total_rows, 'added_rows': added_rows}
         
     except Exception as e:
         error_msg = f"Error processing file: {str(e)}"
-        print(error_msg)
         raise Exception(error_msg)
 
 @anvil.email.handle_message
