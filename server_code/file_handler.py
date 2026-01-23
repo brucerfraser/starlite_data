@@ -1,3 +1,4 @@
+import anvil.email
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
@@ -123,3 +124,9 @@ def receive_file(file):
         error_msg = f"Error processing file: {str(e)}"
         print(error_msg)
         raise Exception(error_msg)
+
+@anvil.email.handle_message
+def handle_incoming_emails(msg):
+
+  for a in msg.attachments:
+    pass
