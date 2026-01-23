@@ -188,7 +188,8 @@ def receive_file(file, rows_completed=0):
                     entry[key] = str(value)
     
     # Load the entire flights table into a list of dictionaries (db_1)
-    db_1 = [row.to_dict() for row in app_tables.flights.search()]
+    db_1 = [dict(row) for row in app_tables.flights.search()]
+    # db_1 = [row.to_dict() for row in app_tables.flights.search()]
 
     # Remove entries in db_2 that already exist in db_1
     db_2 = data_list
