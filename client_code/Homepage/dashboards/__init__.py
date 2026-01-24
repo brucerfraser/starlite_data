@@ -19,4 +19,5 @@ class dashboards(dashboardsTemplate):
     self.cp_controls.add_component(self.controller)
 
   def act(self,package,**event_args):
+    # Co-pilot please start here for dashboards form
     pass
