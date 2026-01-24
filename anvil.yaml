@@ -62,7 +62,10 @@ db_schema:
       type: number
     server: full
     title: flights
-dependencies: []
+dependencies:
+- dep_id: dep_7c4de7gzotlfdi
+  resolution_hints: {app_id: C6ZZPAPN4YYF5NVJ, name: Anvil Extras, package_name: anvil_extras}
+  version: {version_tag: v3.6.1}
 metadata: {title: Starlite Data}
 name: Starlite Data
 package_name: Starlite_Data

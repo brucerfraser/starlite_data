@@ -19,13 +19,13 @@ components:
     properties: {}
     type: Label
   - data_bindings:
-    - {code: 'self.item[''CFF_Client'']', property: text, writeback: false}
+    - {code: 'self.item[''CFF_Client''][0:12] + "..."', property: text, writeback: false}
     layout_properties: {grid_position: 'BMSSZG,BZNURS'}
     name: lbl_client
     properties: {}
     type: Label
   - data_bindings:
-    - {code: 'self.item[''CFF_Base_of_Operation'']', property: text, writeback: false}
+    - {code: '"..." + self.item[''CFF_Base_of_Operation''][-17:]', property: text, writeback: false}
     layout_properties: {grid_position: 'BMSSZG,NCAHRK'}
     name: lbl_base
     properties: {}
@@ -45,7 +45,7 @@ components:
   layout_properties: {full_width_row: true, grid_position: 'LHPNMH,BWVMRI'}
   name: cp_one_record
   properties:
-    col_widths: '{"YUZWYH":5,"TUGYNS":5,"FLRIUH":5,"BZNURS":10,"NCAHRK":25,"TSWZLG":5,"NYKDGR":5}'
+    col_widths: '{"YUZWYH":10,"TUGYNS":5,"FLRIUH":10,"BZNURS":10,"NCAHRK":15,"TSWZLG":5,"NYKDGR":5}'
     role: outlined-card
     spacing:
       padding: [2, null, 2, null]
