@@ -5,6 +5,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...local_data import FLIGHTS
+from datetime import datetime
 
 
 class records(recordsTemplate):
@@ -16,4 +17,12 @@ class records(recordsTemplate):
 
   @handle("", "show")
   def form_show(self, **event_args):
-    self.rp_records.items = FLIGHTS
+    # Get the current year
+    current_year = datetime.now().year
+
+    # Filter FLIGHTS for the current year and sort by date (newest to oldest)
+    self.rp_records.items = sorted(
+        [flight for flight in FLIGHTS if flight.get('FltDate') and flight['FltDate'].year == current_year],
+        key=lambda x: x['FltDate'],
+        reverse=True
+    )
