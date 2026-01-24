@@ -29,11 +29,11 @@ class dashboards(dashboardsTemplate):
     Generate graphs using the package and place them in the graphs_panel.
     """
     # Clear the graphs panel
-    self.graphs_panel.clear()
+    self.graphs.clear()
 
     # Generate graphs using the graph_data module
     graphs = create_graphs(package)
 
     # Add each graph to the graphs panel
     for graph in graphs:
-      self.graphs_panel.add_component(PlotlyPanel(graph))
+      self.graphs.add_component(PlotlyPanel(graph))
