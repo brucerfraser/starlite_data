@@ -1,16 +1,56 @@
 components:
 - components:
+  - layout_properties: {grid_position: 'SRXEUF,WIFDEY'}
+    name: label_1
+    properties: {align: right, text: year}
+    type: Label
   - layout_properties: {grid_position: 'SRXEUF,WLJQAX'}
     name: msdd_years
     properties: {}
     type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'OJXUYX,KAAJAG'}
+    name: label_1_copy
+    properties: {align: right, text: month}
+    type: Label
   - layout_properties: {grid_position: 'OJXUYX,MVWDVU'}
     name: msdd_months
     properties: {}
     type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'BMUWVV,NSDYNF'}
+    name: label_1_copy_2
+    properties: {align: right, text: ac type}
+    type: Label
+  - layout_properties: {grid_position: 'BMUWVV,UMUDRG'}
+    name: msdd_ac_type
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'TFYGZN,ZMVHNK'}
+    name: label_1_copy_3
+    properties: {align: right, text: ac reg}
+    type: Label
+  - layout_properties: {grid_position: 'TFYGZN,LNUMEN'}
+    name: msdd_rego
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'XTVLOT,XQIZXH'}
+    name: label_1_copy_4
+    properties: {align: right, text: base}
+    type: Label
+  - layout_properties: {grid_position: 'XTVLOT,PQFSMR'}
+    name: msdd_cff_base
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'QXXHTA,GVHQNQ'}
+    name: label_1_copy_5
+    properties: {align: right, text: client}
+    type: Label
+  - layout_properties: {grid_position: 'QXXHTA,SARSPW'}
+    name: msdd_cff_client
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
   layout_properties: {full_width_row: true, grid_position: 'VCFHED,DKJPWE'}
   name: outlined_card_1
-  properties: {role: outlined-card}
+  properties: {col_widths: '{"WIFDEY":15,"WLJQAX":45,"KAAJAG":15,"MVWDVU":45,"NSDYNF":15,"UMUDRG":45,"ZMVHNK":15,"LNUMEN":45,"XQIZXH":15,"PQFSMR":45,"GVHQNQ":15,"SARSPW":45}', role: outlined-card, wrap_on: never}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true
