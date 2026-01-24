@@ -34,11 +34,15 @@ class dashboards(dashboardsTemplate):
     # Generate graphs using the graph_data module
     graphs = create_graphs(package)
 
+    # Ensure there are exactly 4 graphs (fill with placeholders if needed)
+    while len(graphs) < 4:
+        graphs.append(([], {"title": "No Data", "xaxis": {}, "yaxis": {}}))
+
     # Add graphs to the GridPanel in a 2x2 layout
-    self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0,width_xs=6)
-    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=6,width_xs=6)
-    self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0,width_xs=6)
-    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=6,width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0, width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=6, width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0, width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=6, width_xs=6)
 
   def _make_plot(self, traces, layout, *, height=320, interactive=True):
     """

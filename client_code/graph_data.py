@@ -53,40 +53,48 @@ def create_graphs(package):
     # Create graphs
     graphs = []
 
-    # Graph 1: Flight Hours by Month
+    # Graph 1: Flight Hours by Month (Waterfall Chart)
+    cumulative_hours = []
+    total = 0
+    for month in months:
+        total += flight_hours_by_month[month]
+        cumulative_hours.append(total)
     traces = [{
-        "type": "bar",
-        "x": list(flight_hours_by_month.keys()),
-        "y": list(flight_hours_by_month.values())
+        "type": "waterfall",
+        "x": months,
+        "y": cumulative_hours,
+        "connector": {"line": {"color": "rgb(63, 63, 63)"}}
     }]
     layout = {
-        "title": "Flight Hours by Month",
+        "title": "Flight Hours by Month (Cumulative)",
         "xaxis": {"title": "Month"},
-        "yaxis": {"title": "Hours"}
+        "yaxis": {"title": "Cumulative Hours"}
     }
     graphs.append((traces, layout))
 
-    # Graph 2: Flight Hours by Aircraft
+    # Graph 2: Flight Hours by Aircraft (Sorted Bar Chart)
+    sorted_aircraft = sorted(flight_hours_by_aircraft.items(), key=lambda x: x[1], reverse=True)
     traces = [{
         "type": "bar",
-        "x": list(flight_hours_by_aircraft.keys()),
-        "y": list(flight_hours_by_aircraft.values())
+        "x": [item[0] for item in sorted_aircraft],
+        "y": [item[1] for item in sorted_aircraft]
     }]
     layout = {
-        "title": "Flight Hours by Aircraft",
+        "title": "Flight Hours by Aircraft (Sorted)",
         "xaxis": {"title": "Aircraft"},
         "yaxis": {"title": "Hours"}
     }
     graphs.append((traces, layout))
 
-    # Graph 3: Flight Hours by Contract
+    # Graph 3: Flight Hours by Contract (Sorted Bar Chart)
+    sorted_contracts = sorted(flight_hours_by_contract.items(), key=lambda x: x[1], reverse=True)
     traces = [{
         "type": "bar",
-        "x": list(flight_hours_by_contract.keys()),
-        "y": list(flight_hours_by_contract.values())
+        "x": [item[0] for item in sorted_contracts],
+        "y": [item[1] for item in sorted_contracts]
     }]
     layout = {
-        "title": "Flight Hours by Contract",
+        "title": "Flight Hours by Contract (Sorted)",
         "xaxis": {"title": "Contract"},
         "yaxis": {"title": "Hours"}
     }
