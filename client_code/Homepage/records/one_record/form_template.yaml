@@ -1,0 +1,53 @@
+components:
+- components:
+  - data_bindings:
+    - {code: 'self.item[''FltDate'']', property: text, writeback: false}
+    layout_properties: {full_width_row: true, grid_position: 'BMSSZG,YUZWYH'}
+    name: lbl_date
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''ACType'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,TUGYNS'}
+    name: lbl_type
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''Rego'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,FLRIUH'}
+    name: lbl_rego
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''CFF_Client'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,BZNURS'}
+    name: lbl_client
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''CFF_Base_of_Operation'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,NCAHRK'}
+    name: lbl_base
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''Air Time'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,TSWZLG'}
+    name: lbl_air_time
+    properties: {}
+    type: Label
+  - data_bindings:
+    - {code: 'self.item[''Block Time'']', property: text, writeback: false}
+    layout_properties: {grid_position: 'BMSSZG,NYKDGR'}
+    name: lbl_block_time
+    properties: {}
+    type: Label
+  layout_properties: {full_width_row: true, grid_position: 'LHPNMH,BWVMRI'}
+  name: cp_one_record
+  properties:
+    role: outlined-card
+    spacing:
+      padding: [2, null, 2, null]
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

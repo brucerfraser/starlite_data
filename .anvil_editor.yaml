@@ -8,7 +8,7 @@ unique_ids:
     Homepage: NCYTHO2P7V27A7TV37YAWUGB52NDDGSI
     Homepage.dashboards: '1769179197489859954898538.5719'
     Homepage.records: '1769179241368735178509347.0521'
-    Homepage.records.ItemTemplate1: '176917925718673339676214.43172'
+    Homepage.records.one_record: '176917925718673339676214.43172'
   modules:
     local_data: '176917518560747675957585.40077'
   scripts: {}
