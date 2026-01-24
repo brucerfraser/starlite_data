@@ -36,9 +36,9 @@ class dashboards(dashboardsTemplate):
 
     # Add graphs to the GridPanel in a 2x2 layout
     self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0)
-    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=1)
+    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=7)
     self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0)
-    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=1)
+    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=7)
 
   def _make_plot(self, traces, layout, *, height=320, interactive=False):
     """
