@@ -1046,3 +1046,19 @@ div.plot-container.plotly svg.main-svg {
   box-shadow: 0px 0px 100px 100px %color:Surface Variant%;
 }
 
+/* BRUCE UPDATED CSS */
+
+/* Define CSS variables for height and scrollability */
+:root {
+  --container-height: 80vh; /* Default to 80% of the screen height */
+  --container-scroll: auto; /* Default to vertical scrolling enabled */
+}
+
+/* Anvil role for a resizable and scrollable container */
+.anvil-role-resizable-scrollable-container {
+  height: var(--container-height); /* Use the height variable */
+  overflow-y: var(--container-scroll); /* Use the scroll variable */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  box-sizing: border-box; /* Ensure padding and borders are included in height */
+}
+
