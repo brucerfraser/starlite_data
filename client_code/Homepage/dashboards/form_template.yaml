@@ -1,13 +1,17 @@
 components:
-- layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,TZSKRY'}
-  name: graphs
+- layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,GCBZEU'}
+  name: graphs_panel
   properties: {}
-  type: ColumnPanel
+  type: GridPanel
 - layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,BQGHFC'}
   name: cp_controls
   properties: {}
   type: ColumnPanel
+- layout_properties: {full_width_row: true, grid_position: 'JFNSSF,TZZCFU'}
+  name: graphs
+  properties: {}
+  type: ColumnPanel
 container:
-  properties: {col_widths: '{"TZSKRY":45,"BQGHFC":15}'}
+  properties: {col_widths: '{"BQGHFC":9,"GCBZEU":40}'}
   type: ColumnPanel
 is_package: true
