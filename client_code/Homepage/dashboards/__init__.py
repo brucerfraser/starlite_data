@@ -6,7 +6,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...graph_data import create_graphs
 import plotly.graph_objects as go  # Import Plotly for graph rendering
-from anvil_extras.plotly import PlotlyPanel  # Import PlotlyPanel if it's part of an Anvil package
 
 
 class dashboards(dashboardsTemplate):
@@ -38,5 +37,5 @@ class dashboards(dashboardsTemplate):
 
     # Add each graph to the graphs panel
     for graph in graphs:
-      # Add the Plotly graph directly to the container
-      self.graphs.add_component(PlotlyPanel(graph))
+      # Use go.FigureWidget to render the Plotly graph
+      self.graphs.add_component(go.FigureWidget(graph))
