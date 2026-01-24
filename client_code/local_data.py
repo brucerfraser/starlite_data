@@ -40,12 +40,12 @@ def package_flights(package):
     # Filter FLIGHTS based on the package criteria
     filtered_flights = [
         flight for flight in FLIGHTS
-        if (str(flight['FltDate'].year) in years if years else True) and
-           (MONTH_NAMES[flight['FltDate'].month - 1] in months if months else True) and
-           (flight['ACType'] in ac_types if ac_types else True) and
-           (flight['Rego'] in regos if regos else True) and
-           (flight['CFF_Base_of_Operation'] in cff_bases if cff_bases else True) and
-           (flight['CFF_Client'] in cff_clients if cff_clients else True)
+        if str(flight['FltDate'].year) in years and
+           MONTH_NAMES[flight['FltDate'].month - 1] in months and
+           flight['ACType'] in ac_types and
+           flight['Rego'] in regos and
+           flight['CFF_Base_of_Operation'] in cff_bases and
+           flight['CFF_Client'] in cff_clients
     ]
 
     # Sort the filtered flights by date (newest to oldest)
