@@ -35,12 +35,12 @@ class dashboards(dashboardsTemplate):
     graphs = create_graphs(package)
 
     # Add graphs to the GridPanel in a 2x2 layout
-    self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0)
-    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=7)
-    self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0)
-    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=7)
+    self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0,width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=6,width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0,width_xs=6)
+    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=6,width_xs=6)
 
-  def _make_plot(self, traces, layout, *, height=320, interactive=False):
+  def _make_plot(self, traces, layout, *, height=320, interactive=True):
     """
     Helper function to create an Anvil Plot component.
 
@@ -55,7 +55,7 @@ class dashboards(dashboardsTemplate):
     """
     p = Plot()
     p.height = str(height)
-    p.interactive = bool(interactive)
+    p.interactive = True
     p.config = {
         "doubleClick": "reset",
         "displaylogo": False,
