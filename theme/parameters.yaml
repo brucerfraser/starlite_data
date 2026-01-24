@@ -331,3 +331,4 @@ roles:
   name: outlined-error
 - components: [TextBox, TextArea, DatePicker, DropDown]
   name: input-error
+- {name: resizable-scrollable-container}
