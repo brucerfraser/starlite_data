@@ -21,7 +21,7 @@ class comp_controls(comp_controlsTemplate):
     # Extract all unique years from FLIGHTS
     years = sorted({flight['FltDate'].year for flight in FLIGHTS if flight.get('FltDate')})
     # Add "All" option at the top
-    self.msdd_years.items = [{'key': 'all', 'value': 'All'}] + [{'key': year, 'value': str(year)} for year in years]
+    self.msdd_years.items = [{'key': 'all', 'value': 'All'}] + [{'key': str(year), 'value': str(year)} for year in years]
 
   def load_months(self):
     # Define month names
@@ -30,10 +30,10 @@ class comp_controls(comp_controlsTemplate):
       "July", "August", "September", "October", "November", "December"
     ]
     # Add "All" option at the top
-    self.msdd_months.items = [{'key': 'all', 'value': 'All'}] + [{'key': i + 1, 'value': month} for i, month in enumerate(months)]
+    self.msdd_months.items = [{'key': 'all', 'value': 'All'}] + [{'key': month, 'value': month} for month in enumerate(months)]
 
   @handle("msdd_years","change")
-  def msdd_years_change(self,count,total, **event_args):
+  def msdd_years_change(self,**event_args):
     # Handle "All" option for years
     selected_keys = self.msdd_years.selected
     if 'all' in selected_keys:
@@ -46,7 +46,7 @@ class comp_controls(comp_controlsTemplate):
     print("Selected years:", self.msdd_years.selected)
 
   @handle("msdd_months", "change")
-  def msdd_months_change(self,count,total, **event_args):
+  def msdd_months_change(self, **event_args):
     # Handle "All" option for months
     selected_keys = self.msdd_months.selected
     if 'all' in selected_keys:
