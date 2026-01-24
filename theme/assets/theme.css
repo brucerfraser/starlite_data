@@ -1050,7 +1050,7 @@ div.plot-container.plotly svg.main-svg {
 
 /* Define CSS variables for height and scrollability */
 :root {
-  --container-height: 80vh; /* Default to 80% of the screen height */
+  --container-height: 75vh; /* Default to 80% of the screen height */
   --container-scroll: auto; /* Default to vertical scrolling enabled */
 }
 
