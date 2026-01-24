@@ -47,7 +47,7 @@ class comp_controls(comp_controlsTemplate):
     self.msdd_months.selected = [item['key'] for item in self.msdd_months.items]
 
   @handle("msdd_years", "change")
-  def msdd_years_change(self, count, total, **event_args):
+  def msdd_years_change(self,  **event_args):
     # Handle "All" option for years
     selected_keys = self.msdd_years.selected
     if 'All' in selected_keys:
@@ -60,7 +60,7 @@ class comp_controls(comp_controlsTemplate):
     print("Selected years:", self.msdd_years.selected)
 
   @handle("msdd_months", "change")
-  def msdd_months_change(self, count, total, **event_args):
+  def msdd_months_change(self,  **event_args):
     # Handle "All" option for months
     selected_keys = self.msdd_months.selected
     if 'All' in selected_keys:
