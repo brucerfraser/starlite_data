@@ -22,7 +22,7 @@ def package_flights(package):
       list: Filtered and sorted list of flights.
   """
   global FLIGHTS
-
+  print(FLIGHTS[34]['FltDate'].month)
   # Extract years and months from the package
   years = package.get('years', [])
   months = package.get('months', [])

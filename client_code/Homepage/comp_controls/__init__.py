@@ -84,7 +84,7 @@ class comp_controls(comp_controlsTemplate):
       else:
         # Just a normal change
         self.package['years'] = self.msdd_years.selected
-    
+    self.send_pack()
 
   @handle("msdd_months", "change")
   def msdd_months_change(self, **event_args):
@@ -121,6 +121,7 @@ class comp_controls(comp_controlsTemplate):
       else:
         # Just a normal change
         self.package['months'] = self.msdd_months.selected
+    self.send_pack()
 
   def send_pack(self,**event_args):
     self.parent.raise_event('x-listen',package=self.package)
