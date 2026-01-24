@@ -5,7 +5,6 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...graph_data import create_graphs
-import plotly.graph_objects as go  # Import Plotly for graph rendering
 
 
 class dashboards(dashboardsTemplate):
@@ -36,6 +35,34 @@ class dashboards(dashboardsTemplate):
     graphs = create_graphs(package)
 
     # Add each graph to the graphs panel
-    for graph in graphs:
-      # Use go.FigureWidget to render the Plotly graph
-      self.graphs.add_component(go.FigureWidget(graph))
+    for traces, layout in graphs:
+      # Use the _make_plot helper function to create the Plot component
+      plot = self._make_plot(traces, layout)
+      self.graphs.add_component(plot)
+
+  def _make_plot(self, traces, layout, *, height=320, interactive=False):
+    """
+    Helper function to create an Anvil Plot component.
+
+    Args:
+        traces (list): List of Plotly traces (data).
+        layout (dict): Plotly layout dictionary.
+        height (int): Height of the plot.
+        interactive (bool): Whether the plot is interactive.
+
+    Returns:
+        Plot: An Anvil Plot component.
+    """
+    p = Plot()
+    p.height = str(height)
+    p.interactive = bool(interactive)
+    p.config = {
+        "doubleClick": "reset",
+        "displaylogo": False,
+        "scrollZoom": False,
+        "responsive": True
+    }
+    p.data = traces
+    p.layout = layout
+    p.redraw()
+    return p

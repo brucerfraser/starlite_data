@@ -22,7 +22,7 @@ def create_graphs(package):
         package (dict): A dictionary containing filter criteria for FLIGHTS.
 
     Returns:
-        list: A list of Plotly graph objects.
+        list: A list of (traces, layout) tuples for Plotly graphs.
     """
     # Filter FLIGHTS data using the package
     flights = package_flights(package)
@@ -54,32 +54,65 @@ def create_graphs(package):
     graphs = []
 
     # Graph 1: Flight Hours by Month
-    graphs.append(go.Figure(
-        data=[go.Bar(x=list(flight_hours_by_month.keys()), y=list(flight_hours_by_month.values()))],
-        layout=go.Layout(title="Flight Hours by Month", xaxis_title="Month", yaxis_title="Hours")
-    ))
+    traces = [{
+        "type": "bar",
+        "x": list(flight_hours_by_month.keys()),
+        "y": list(flight_hours_by_month.values())
+    }]
+    layout = {
+        "title": "Flight Hours by Month",
+        "xaxis": {"title": "Month"},
+        "yaxis": {"title": "Hours"}
+    }
+    graphs.append((traces, layout))
 
     # Graph 2: Flight Hours by Aircraft
-    graphs.append(go.Figure(
-        data=[go.Bar(x=list(flight_hours_by_aircraft.keys()), y=list(flight_hours_by_aircraft.values()))],
-        layout=go.Layout(title="Flight Hours by Aircraft", xaxis_title="Aircraft", yaxis_title="Hours")
-    ))
+    traces = [{
+        "type": "bar",
+        "x": list(flight_hours_by_aircraft.keys()),
+        "y": list(flight_hours_by_aircraft.values())
+    }]
+    layout = {
+        "title": "Flight Hours by Aircraft",
+        "xaxis": {"title": "Aircraft"},
+        "yaxis": {"title": "Hours"}
+    }
+    graphs.append((traces, layout))
 
     # Graph 3: Flight Hours by Contract
-    graphs.append(go.Figure(
-        data=[go.Bar(x=list(flight_hours_by_contract.keys()), y=list(flight_hours_by_contract.values()))],
-        layout=go.Layout(title="Flight Hours by Contract", xaxis_title="Contract", yaxis_title="Hours")
-    ))
+    traces = [{
+        "type": "bar",
+        "x": list(flight_hours_by_contract.keys()),
+        "y": list(flight_hours_by_contract.values())
+    }]
+    layout = {
+        "title": "Flight Hours by Contract",
+        "xaxis": {"title": "Contract"},
+        "yaxis": {"title": "Hours"}
+    }
+    graphs.append((traces, layout))
 
     # Graph 4: Flight Hours Comparison (Current Year vs Previous Year)
-    graphs.append(go.Figure(
-        data=[
-            go.Bar(name="Current Year", x=list(flight_hours_comparison.keys()),
-                   y=[data['current_year'] for data in flight_hours_comparison.values()]),
-            go.Bar(name="Previous Year", x=list(flight_hours_comparison.keys()),
-                   y=[data['previous_year'] for data in flight_hours_comparison.values()])
-        ],
-        layout=go.Layout(title="Flight Hours Comparison", xaxis_title="Month", yaxis_title="Hours", barmode="group")
-    ))
+    traces = [
+        {
+            "type": "bar",
+            "name": "Current Year",
+            "x": list(flight_hours_comparison.keys()),
+            "y": [data['current_year'] for data in flight_hours_comparison.values()]
+        },
+        {
+            "type": "bar",
+            "name": "Previous Year",
+            "x": list(flight_hours_comparison.keys()),
+            "y": [data['previous_year'] for data in flight_hours_comparison.values()]
+        }
+    ]
+    layout = {
+        "title": "Flight Hours Comparison",
+        "xaxis": {"title": "Month"},
+        "yaxis": {"title": "Hours"},
+        "barmode": "group"
+    }
+    graphs.append((traces, layout))
 
     return graphs
