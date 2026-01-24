@@ -45,6 +45,7 @@ components:
   layout_properties: {full_width_row: true, grid_position: 'LHPNMH,BWVMRI'}
   name: cp_one_record
   properties:
+    col_widths: '{"YUZWYH":5,"TUGYNS":5,"FLRIUH":5,"BZNURS":10,"NCAHRK":25,"TSWZLG":5,"NYKDGR":5}'
     role: outlined-card
     spacing:
       padding: [2, null, 2, null]
