@@ -6,6 +6,11 @@ from anvil.tables import app_tables
 global FLIGHTS
 FLIGHTS = []
 
+# Define a mapping of month numbers to month names
+MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
 
 def load_up():
   global FLIGHTS
@@ -22,7 +27,7 @@ def package_flights(package):
       list: Filtered and sorted list of flights.
   """
   global FLIGHTS
-  print(FLIGHTS[34]['FltDate'].month)
+
   # Extract years and months from the package
   years = package.get('years', [])
   months = package.get('months', [])
@@ -30,7 +35,7 @@ def package_flights(package):
   # Filter FLIGHTS based on years and months
   filtered_flights = [
       flight for flight in FLIGHTS
-      if str(flight['FltDate'].year) in years and str(flight['FltDate'].month) in months
+      if str(flight['FltDate'].year) in years and MONTH_NAMES[flight['FltDate'].month - 1] in months
   ]
 
   # Sort the filtered flights by date (newest to oldest)
