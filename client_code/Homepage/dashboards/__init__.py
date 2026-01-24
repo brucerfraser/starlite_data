@@ -29,16 +29,16 @@ class dashboards(dashboardsTemplate):
     Generate graphs using the package and place them in the graphs_panel.
     """
     # Clear the graphs panel
-    self.graphs.clear()
+    self.graphs_panel.clear()
 
     # Generate graphs using the graph_data module
     graphs = create_graphs(package)
 
-    # Add each graph to the graphs panel
-    for traces, layout in graphs:
-      # Use the _make_plot helper function to create the Plot component
-      plot = self._make_plot(traces, layout)
-      self.graphs.add_component(plot)
+    # Add graphs to the GridPanel in a 2x2 layout
+    self.graphs_panel.add_component(self._make_plot(*graphs[0]), row=0, col_xs=0)
+    self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=1)
+    self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0)
+    self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=1)
 
   def _make_plot(self, traces, layout, *, height=320, interactive=False):
     """
