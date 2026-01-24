@@ -13,6 +13,8 @@ class dashboards(dashboardsTemplate):
     self.init_components(**properties)
     self.load_controls()
     self.cp_controls.set_event_handler('x-listen', self.act)
+    # load the first visual
+    self.act(self.controller.package)
 
   def load_controls(self, **event_args):
     """
