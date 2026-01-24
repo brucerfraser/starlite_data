@@ -44,3 +44,9 @@ class Homepage(HomepageTemplate):
     self.content_panel.clear()
     self.content_panel.add_component(records())
 
+  @handle('btn_dashboard','click')
+  def btn_dashboard_click(self,**event_args):
+    from .dashboards import dashboards
+    self.content_panel.clear()
+    self.content_panel.add_component(dashboards())
+
