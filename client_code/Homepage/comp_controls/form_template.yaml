@@ -1,5 +1,14 @@
 components:
-- layout_properties: {full_width_row: true, grid_position: 'VCFHED,DKJPWE'}
+- components:
+  - layout_properties: {grid_position: 'SRXEUF,WLJQAX'}
+    name: msdd_years
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  - layout_properties: {grid_position: 'OJXUYX,MVWDVU'}
+    name: msdd_months
+    properties: {}
+    type: form:dep_7c4de7gzotlfdi:MultiSelectDropDown
+  layout_properties: {full_width_row: true, grid_position: 'VCFHED,DKJPWE'}
   name: outlined_card_1
   properties: {role: outlined-card}
   type: ColumnPanel
