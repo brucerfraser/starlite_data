@@ -17,28 +17,38 @@ def load_up():
   FLIGHTS = anvil.server.call('flight_records')
 
 def package_flights(package):
-  """
-  Filters and sorts FLIGHTS based on the given package dictionary.
+    """
+    Filters and sorts FLIGHTS based on the given package dictionary.
 
-  Args:
-      package (dict): A dictionary with 'years' and 'months' as keys, each containing a list of strings.
+    Args:
+        package (dict): A dictionary with keys 'years', 'months', 'ac_type', 'rego', 'cff_base', and 'cff_client',
+                        each containing a list of strings.
 
-  Returns:
-      list: Filtered and sorted list of flights.
-  """
-  global FLIGHTS
+    Returns:
+        list: Filtered and sorted list of flights.
+    """
+    global FLIGHTS
 
-  # Extract years and months from the package
-  years = package.get('years', [])
-  months = package.get('months', [])
+    # Extract filter criteria from the package
+    years = package.get('years', [])
+    months = package.get('months', [])
+    ac_types = package.get('ac_type', [])
+    regos = package.get('rego', [])
+    cff_bases = package.get('cff_base', [])
+    cff_clients = package.get('cff_client', [])
 
-  # Filter FLIGHTS based on years and months
-  filtered_flights = [
-      flight for flight in FLIGHTS
-      if str(flight['FltDate'].year) in years and MONTH_NAMES[flight['FltDate'].month - 1] in months
-  ]
+    # Filter FLIGHTS based on the package criteria
+    filtered_flights = [
+        flight for flight in FLIGHTS
+        if (str(flight['FltDate'].year) in years if years else True) and
+           (MONTH_NAMES[flight['FltDate'].month - 1] in months if months else True) and
+           (flight['ACType'] in ac_types if ac_types else True) and
+           (flight['Rego'] in regos if regos else True) and
+           (flight['CFF_Base_of_Operation'] in cff_bases if cff_bases else True) and
+           (flight['CFF_Client'] in cff_clients if cff_clients else True)
+    ]
 
-  # Sort the filtered flights by date (newest to oldest)
-  sorted_flights = sorted(filtered_flights, key=lambda x: x['FltDate'], reverse=True)
+    # Sort the filtered flights by date (newest to oldest)
+    sorted_flights = sorted(filtered_flights, key=lambda x: x['FltDate'], reverse=True)
 
-  return sorted_flights
+    return sorted_flights
