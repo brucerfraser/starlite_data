@@ -1,8 +1,17 @@
 components:
-- layout_properties: {full_width_row: true, grid_position: 'YNCGXC,YOLKQB'}
-  name: rp_records
-  properties: {item_template: Homepage.records.ItemTemplate1}
-  type: RepeatingPanel
+- components:
+  - layout_properties: {full_width_row: true, grid_position: 'RLNNNH,PCPZPF'}
+    name: rp_records
+    properties: {item_template: Homepage.records.one_record}
+    type: RepeatingPanel
+  - layout_properties: {grid_position: 'RLNNNH,TACXGK'}
+    name: cp_controls
+    properties: {}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'SVPVTW,QJWWBQ'}
+  name: column_panel_1
+  properties: {col_widths: '{"PCPZPF":45,"TACXGK":15}'}
+  type: ColumnPanel
 container:
   event_bindings: {}
   type: ColumnPanel

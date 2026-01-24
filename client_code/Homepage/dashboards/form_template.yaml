@@ -4,7 +4,7 @@ components:
   properties: {}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,BQGHFC'}
-  name: controls
+  name: cp_controls
   properties: {}
   type: ColumnPanel
 container:

@@ -19,7 +19,6 @@ class Homepage(HomepageTemplate):
   
     
   def refresh_entries(self):
-     print(anvil.server.call('flight_size'))
      pass
 
 
