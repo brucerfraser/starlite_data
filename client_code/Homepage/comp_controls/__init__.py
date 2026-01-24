@@ -12,6 +12,8 @@ class comp_controls(comp_controlsTemplate):
   def __init__(self, year=None, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
+    # we need to keep a watch on if an "All" has been clicked or not
+    self.alls = {'years': False, 'months': True}
 
     # Ensure year argument is a string if provided
     if year is not None:
@@ -42,19 +44,30 @@ class comp_controls(comp_controlsTemplate):
     self.msdd_months.items = [{'key': 'All', 'value': 'all'}] + [{'key': month, 'value': i + 1} for i, month in enumerate(months)]
 
     # Select all months by default
-    self.msdd_months.selected = [item['key'] for item in self.msdd_months.items]
+    self.msdd_months.selected = ['All'] + months
 
   @handle("msdd_years", "change")
   def msdd_years_change(self, **event_args):
     # Handle "All" option for years
     selected_keys = self.msdd_years.selected
     if 'All' in selected_keys:
-      # Select all years if "All" is selected
-      all_keys = [item['key'] for item in self.msdd_years.items]
-      self.msdd_years.selected = all_keys
-    elif not selected_keys:
-      # Deselect all if no keys are selected
-      self.msdd_years.selected = []
+      # Select all years if "All" is selected and wasn't in the previous selection
+      if self.alls['years'] == False:
+        self.alls['years'] = True
+        all_keys = [item['key'] for item in self.msdd_years.items]
+        self.msdd_years.selected = all_keys
+      else:
+        # we must deselect All if an item has been deselcted
+        if len(selected_keys) < len(self.msdd_years.items):
+          self.alls['years'] = False
+          # Remove 'All' from selection
+          selected_keys.remove('All')
+          self.msdd_years.selected = selected_keys
+    else:
+      # We must check if All was previously selected
+      if self.alls['years'] == True:
+        self.alls['years'] = False
+        self.msdd_years.selected = []
     print("Selected years:", self.msdd_years.selected)
 
   @handle("msdd_months", "change")
