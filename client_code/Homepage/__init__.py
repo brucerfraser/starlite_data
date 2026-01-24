@@ -13,14 +13,8 @@ class Homepage(HomepageTemplate):
     self.init_components(**properties)
     # Any code you write here will run when the form opens.
     local_data.load_up()
-    self.refresh_entries()
-      # Set an event handler on the RepeatingPanel (our 'entries_panel')
-
-  
+    self.btn_records_click()
     
-  def refresh_entries(self):
-     pass
-
 
   @handle("file_loader_1", "change")
   def upload(self,file,**event_args):
