@@ -10,4 +10,8 @@ FLIGHTS = []
 def load_up():
   global FLIGHTS
   FLIGHTS = anvil.server.call('flight_records')
+
+def package_flights(package):
+  global FLIGHTS
+  pass
   

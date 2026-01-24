@@ -5,6 +5,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...local_data import FLIGHTS
+from ... import local_data
 from datetime import datetime
 
 
@@ -13,6 +14,7 @@ class records(recordsTemplate):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     self.controller = None
+    self.cp_controls.set_event_handler('x-listen',self.act)
     # Any code you write here will run before the form opens.
 
   @handle("", "show")
@@ -30,5 +32,8 @@ class records(recordsTemplate):
 
   def load_controls(self,**event_args):
     from ..comp_controls import comp_controls
-    self.controller = comp_controls(2026)
+    self.controller = comp_controls()
     self.cp_controls.add_component(self.controller)
+
+  def act(self,package,**event_args):
+    self.rp_records.items = local_data.package_flights(package)
