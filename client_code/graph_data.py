@@ -50,9 +50,7 @@ def create_graphs(package):
         elif year == int(package['years'][0]) - 1:  # Previous year
             flight_hours_comparison[month_name]['previous_year'] += flight['Block Time'] or 0
 
-    for k in flight_hours_by_month:
-        print(k,flight_hours_by_month[k])
-
+    
     # Create graphs
     graphs = []
 
@@ -62,7 +60,7 @@ def create_graphs(package):
     for month in months:
         total += flight_hours_by_month[month]
         cumulative_hours.append(flight_hours_by_month[month])
-    print(cumulative_hours)
+    
     traces = [{
         "type": "waterfall",
         "x": months,
