@@ -1,7 +1,7 @@
 components:
 - layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,GCBZEU'}
   name: graphs_panel
-  properties: {}
+  properties: {role: resizable-scrollable-container}
   type: GridPanel
 - layout_properties: {full_width_row: true, grid_position: 'TWYUSJ,BQGHFC'}
   name: cp_controls
