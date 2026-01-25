@@ -27,6 +27,11 @@ def create_graphs(package):
     # Filter FLIGHTS data using the package
     flights = package_flights(package)
 
+    # amend filter to get previous year's flights with same criteria
+    prev_package = package.copy()
+    prev_package['years'] = [str(int(year) - 1) for year in package['years']]
+    prev_flights = package_flights(prev_package)
+
     # Prepare data for graphs
     months = MONTH_NAMES
     flight_hours_by_month = {month: 0 for month in months}
@@ -47,7 +52,11 @@ def create_graphs(package):
         year = flight['FltDate'].year
         if year == int(package['years'][0]):  # Current year
             flight_hours_comparison[month_name]['current_year'] += flight['Block Time'] or 0
-        elif year == int(package['years'][0]) - 1:  # Previous year
+    
+    for flight in prev_flights:
+        month_name = MONTH_NAMES[flight['FltDate'].month - 1]
+        year = flight['FltDate'].year
+        if year == int(prev_package['years'][0]):  # Previous year
             flight_hours_comparison[month_name]['previous_year'] += flight['Block Time'] or 0
 
     
