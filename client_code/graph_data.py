@@ -61,7 +61,7 @@ def create_graphs(package):
     total = 0
     for month in months:
         total += flight_hours_by_month[month]
-        cumulative_hours.append(total)
+        cumulative_hours.append(flight_hours_by_month[month])
     print(cumulative_hours)
     traces = [{
         "type": "waterfall",
