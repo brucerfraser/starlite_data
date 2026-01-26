@@ -6,8 +6,9 @@ from anvil.tables import query as q
 import anvil.server
 import pandas as pd
 import io
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
+import anvil.http
 
 @anvil.server.callable
 def flight_records():
@@ -232,7 +233,75 @@ def handle_incoming_emails(msg):
   
 
 @anvil.server.callable
-def api_handler(dates):
-  url = 'https://starlite.airmaestro.net/api/reports/333?Param765=2026-01-26&Param768=2026-01-26'
+def api_handler(dates=None):
+  """
+  Fetches flight data from AirMaestro API and loads it into the flights table.
   
+  Args:
+    dates: Optional tuple/list of (start_date, end_date) as datetime.date objects or strings.
+           If None, defaults to previous 10 days.
+           
+  Returns:
+    dict: Result from receive_file function
+  """
+  # API credentials and base URL
+  api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
+  base_url = 'https://starlite.airmaestro.net/api/reports/333'
   
+  # Handle date parameters
+  if dates is None:
+    # Default to previous 10 days
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=10)
+  else:
+    # Parse provided dates
+    if isinstance(dates, (tuple, list)) and len(dates) == 2:
+      start_date = dates[0]
+      end_date = dates[1]
+      
+      # Convert strings to date objects if needed
+      if isinstance(start_date, str):
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+      if isinstance(end_date, str):
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+    else:
+      raise ValueError("dates must be a tuple/list of (start_date, end_date)")
+  
+  # Format dates as yyyy-mm-dd
+  param765 = start_date.strftime('%Y-%m-%d')  # FltDate after or on
+  param768 = end_date.strftime('%Y-%m-%d')    # FltDate before or on
+  
+  # Build the URL with parameters
+  url = f"{base_url}?Param765={param765}&Param768={param768}&format=CSV&AsAttachment=False"
+  
+  # Make the API request with authorization header
+  try:
+    response = anvil.http.request(
+      url,
+      method='GET',
+      headers={'Authorization': api_key}
+    )
+    
+    # Create a mock file object from the response
+    class MockFile:
+      def __init__(self, content, name):
+        self.content = content
+        self.name = name
+      
+      def get_bytes(self):
+        if isinstance(self.content, str):
+          return self.content.encode('utf-8')
+        return self.content
+    
+    # Create file object from response
+    csv_file = MockFile(response, 'airmaestro_api.csv')
+    
+    # Pass to receive_file with source='api'
+    result = receive_file(csv_file, rows_completed=0, source='api')
+    
+    return result
+    
+  except Exception as e:
+    error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
+    print(error_msg)
+    raise Exception(error_msg)
