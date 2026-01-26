@@ -200,7 +200,7 @@ def receive_file(file, rows_completed=0,source='upload'):
         entry for entry in db_2
         if entry not in db_1
     ]
-    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=len(db_2))
+    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=time.time())
     
     app_tables.flights.add_rows(db_2)
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
@@ -209,6 +209,7 @@ def receive_file(file, rows_completed=0,source='upload'):
                            results=logger,
                            file=file,
                            source=source)
+    print(logger)
     return {
         'complete': True,
         'total_rows': len(data_list),
@@ -217,6 +218,15 @@ def receive_file(file, rows_completed=0,source='upload'):
 
 @anvil.email.handle_message
 def handle_incoming_emails(msg):
-
-  for a in msg.attachments:
-    receive_file(file=a,rows_completed=0,source='email')
+  print("email function working")
+  if len(msg.attachments) > 0:
+    for a in msg.attachments:
+      print(a.name)
+      receive_file(file=a,rows_completed=0,source='email')
+  elif len(msg.inline_attachments) > 0:
+    for k,a in msg.inline_attachments.items():
+      print(a.name)
+      receive_file(file=a,rows_completed=0,source='email')
+  else:
+    print("No attachments found")
+  
