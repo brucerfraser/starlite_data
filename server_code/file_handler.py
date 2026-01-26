@@ -209,6 +209,7 @@ def receive_file(file, rows_completed=0,source='upload'):
                            results=logger,
                            file=file,
                            source=source)
+    print(logger)
     return {
         'complete': True,
         'total_rows': len(data_list),
@@ -217,6 +218,7 @@ def receive_file(file, rows_completed=0,source='upload'):
 
 @anvil.email.handle_message
 def handle_incoming_emails(msg):
-
+  print("email function working")
   for a in msg.attachments:
+    print(a.name)
     receive_file(file=a,rows_completed=0,source='email')
