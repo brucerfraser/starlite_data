@@ -229,5 +229,10 @@ def handle_incoming_emails(msg):
       receive_file(file=a,rows_completed=0,source='email')
   else:
     print("No attachments found")
+  
+
+@anvil.server.callable
+def api_handler(dates):
   url = 'https://starlite.airmaestro.net/api/reports/333?Param765=2026-01-26&Param768=2026-01-26'
+  
   
