@@ -51,3 +51,16 @@ class Homepage(HomepageTemplate):
     self.content_panel.clear()
     self.content_panel.add_component(dashboards())
 
+  @handle("btn_refresh", "click")
+  def btn_refresh_click(self, **event_args):
+    result = anvil.server.call('api_handler')
+    complete = result['complete']
+    total_rows = result['total_rows']
+    rows_completed = result['rows_processed']
+
+    if complete:
+      msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
+                                                                       s=rows_completed)
+      alert(msg)
+    else:
+      alert("API call unsuccessful")
