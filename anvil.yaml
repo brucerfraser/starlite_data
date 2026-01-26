@@ -1,38 +1,6 @@
 allow_embedding: false
 correct_dependency_ids: {}
 db_schema:
-  categories:
-    client: search
-    columns:
-    - admin_ui: {width: 200}
-      name: name
-      type: string
-    server: full
-    title: Categories
-  entries:
-    client: search
-    columns:
-    - admin_ui: {width: 200}
-      name: title
-      type: string
-    - admin_ui: {width: 200}
-      name: content
-      type: string
-    - admin_ui: {width: 200}
-      name: image
-      type: media
-    - admin_ui: {width: 200}
-      name: created
-      type: datetime
-    - admin_ui: {width: 200}
-      name: updated
-      type: datetime
-    - admin_ui: {width: 200}
-      name: category
-      target: categories
-      type: link_single
-    server: full
-    title: Entries
   flights:
     client: none
     columns:
@@ -62,6 +30,20 @@ db_schema:
       type: number
     server: full
     title: flights
+  logs:
+    client: none
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      name: date
+      type: datetime
+    - admin_ui: {order: 1, width: 200}
+      name: results
+      type: string
+    - admin_ui: {order: 2, width: 200}
+      name: file
+      type: media
+    server: full
+    title: logs
 dependencies:
 - dep_id: dep_7c4de7gzotlfdi
   resolution_hints: {app_id: C6ZZPAPN4YYF5NVJ, name: Anvil Extras, package_name: anvil_extras}

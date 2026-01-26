@@ -111,12 +111,14 @@ def receive_file(file, rows_completed=0):
 
     # Convert all columns to strings to ensure consistency
     df = df.astype(str)
-
+    # Start logger text
+    logger = ''
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-        raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
+      logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
+      raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
     for entry in data_list:
@@ -184,28 +186,27 @@ def receive_file(file, rows_completed=0):
                     entry[key] = str(value)
     
     # Load the entire flights table into a list of dictionaries (db_1)
-    print("Start compare:",time.time())
+    logger += "\nStart compare: {t}".format(t=time.time())
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
 
     db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
-    print("table size:",len(db_1))
-    # db_1 = [row.to_dict() for row in app_tables.flights.search()]
-    print("Table fast now:",time.time())
+    logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
+  
     # Remove entries in db_2 that already exist in db_1
     db_2 = data_list
-    print("file size pre-strip:",len(db_2))
+    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
     db_2 = [
         entry for entry in db_2
         if entry not in db_1
     ]
-    print("file size post-strip:",len(db_2))
-    print("End compare:",time.time())
-    total_rows = len(db_2)
-    rows_processed = rows_completed
-
+    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=len(db_2))
     
     app_tables.flights.add_rows(db_2)
-    
+    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
+                                                                         s=len(db_2))
+    app_tables.logs.add_row(date=datetime.now(),
+                           results=logger,
+                           file=file)
     return {
         'complete': True,
         'total_rows': len(data_list),
