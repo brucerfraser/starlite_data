@@ -200,7 +200,7 @@ def receive_file(file, rows_completed=0,source='upload'):
         entry for entry in db_2
         if entry not in db_1
     ]
-    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=len(db_2))
+    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=time.time())
     
     app_tables.flights.add_rows(db_2)
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
