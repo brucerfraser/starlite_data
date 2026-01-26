@@ -281,6 +281,7 @@ def api_handler(dates=None):
       method='GET',
       headers={'Authorization': api_key}
     )
+    print(response)
     
     # Create a mock file object from the response
     class MockFile:
