@@ -15,7 +15,7 @@ def flight_records():
   return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
 @anvil.server.callable
-def receive_file(file, rows_completed=0):
+def receive_file(file, rows_completed=0,source='upload'):
     """
     Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
@@ -207,7 +207,8 @@ def receive_file(file, rows_completed=0):
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
                            results=logger,
-                           file=file)
+                           file=file,
+                           source=source)
     return {
         'complete': True,
         'total_rows': len(data_list),
@@ -218,4 +219,4 @@ def receive_file(file, rows_completed=0):
 def handle_incoming_emails(msg):
 
   for a in msg.attachments:
-    pass
+    receive_file(file=a,rows_completed=0,source='email')

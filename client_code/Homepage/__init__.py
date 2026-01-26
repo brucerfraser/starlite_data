@@ -33,8 +33,9 @@ class Homepage(HomepageTemplate):
         rows_completed = result['rows_processed']
         
         if complete:
-          print(f"Completed: total rows {total_rows}")
-          alert(f"File processed successfully!\n\nTotal rows in file: {total_rows}")
+          msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
+                                                                          s=rows_completed)
+          alert(msg)
         else:
           print(f"Rows completed: {rows_completed}")
 
