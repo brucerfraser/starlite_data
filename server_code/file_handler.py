@@ -113,10 +113,12 @@ def receive_file(file, rows_completed=0):
     df = df.astype(str)
 
     # Convert to list of dictionaries
+    
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-        raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
+        
+      raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
     for entry in data_list:
