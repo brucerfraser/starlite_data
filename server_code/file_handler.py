@@ -290,9 +290,15 @@ def api_handler(dates=None):
         self.name = name
       
       def get_bytes(self):
-        if isinstance(self.content, str):
+        # Handle StreamingMedia object
+        if hasattr(self.content, 'get_bytes'):
+          return self.content.get_bytes()
+        elif isinstance(self.content, str):
           return self.content.encode('utf-8')
-        return self.content
+        elif isinstance(self.content, bytes):
+          return self.content
+        else:
+          return str(self.content).encode('utf-8')
     
     # Create file object from response
     csv_file = MockFile(response, 'airmaestro_api.csv')
