@@ -242,11 +242,13 @@ def api_handler(dates=None):
            If None, defaults to previous 10 days.
            
   Returns:
-    dict: Result from process_csv_data function
+    dict: {'complete': True/False, 'total_rows': int, 'rows_processed': int, 'latest_log_date': datetime}
   """
   # API credentials and base URL
   api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
   base_url = 'https://starlite.airmaestro.net/api/reports/333'
+  
+  result = {'complete': False, 'total_rows': 0, 'rows_processed': 0, 'latest_log_date': None}
   
   # Handle date parameters
   if dates is None:
@@ -281,7 +283,6 @@ def api_handler(dates=None):
       method='GET',
       headers={'Authorization': api_key}
     )
-    print(response)
     
     # Get bytes from the response
     if hasattr(response, 'get_bytes'):
@@ -292,12 +293,20 @@ def api_handler(dates=None):
     # Process the CSV data directly
     result = process_csv_data(csv_bytes, source='api')
     
-    return result
-    
   except Exception as e:
     error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
     print(error_msg)
-    raise Exception(error_msg)
+  
+  # Always check for latest log date regardless of API call success
+  try:
+    logs = app_tables.logs.search(q.order_by('date', ascending=False), q.limit(1))
+    if logs:
+      latest_log = list(logs)[0]
+      result['latest_log_date'] = latest_log['date']
+  except Exception as e:
+    print(f"Error retrieving latest log date: {str(e)}")
+  
+  return result
 
 
 def process_csv_data(csv_bytes, source='api'):

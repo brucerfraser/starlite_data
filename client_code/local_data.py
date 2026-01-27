@@ -13,8 +13,17 @@ MONTH_NAMES = [
 ]
 
 def load_up():
+  """Load flight data and get latest data version info.
+  
+  Returns:
+    dict: {'latest_log_date': datetime} for display in UI
+  """
   global FLIGHTS
   FLIGHTS = anvil.server.call('flight_records')
+  
+  # Call api_handler to get latest log date
+  result = anvil.server.call('api_handler')
+  return result
 
 def package_flights(package):
     """

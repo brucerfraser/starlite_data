@@ -6,13 +6,28 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..EntryEdit import EntryEdit
 from .. import local_data
+from datetime import datetime
 
 class Homepage(HomepageTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     # Any code you write here will run when the form opens.
-    local_data.load_up()
+    result = local_data.load_up()
+    
+    # Format and display data version
+    if result and result.get('latest_log_date'):
+      latest_date = result['latest_log_date']
+      today = datetime.now().date()
+      
+      # If date is today, show time; otherwise show date
+      if latest_date.date() == today:
+        date_str = latest_date.strftime('%H:%M')
+      else:
+        date_str = latest_date.strftime('%d %b')
+      
+      self.lbl_data_version.text = f"Data version:\nFlight records: {date_str}"
+    
     self.btn_records_click()
     
 
