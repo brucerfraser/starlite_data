@@ -59,7 +59,7 @@ class Homepage(HomepageTemplate):
     rows_completed = result['rows_processed']
 
     if complete:
-      msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
+      msg = "API retrieved data, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
                                                                        s=rows_completed)
       alert(msg)
     else:
