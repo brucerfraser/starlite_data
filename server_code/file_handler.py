@@ -242,7 +242,7 @@ def api_handler(dates=None):
            If None, defaults to previous 10 days.
            
   Returns:
-    dict: Result from receive_file function
+    dict: Result from process_csv_data function
   """
   # API credentials and base URL
   api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
@@ -283,32 +283,191 @@ def api_handler(dates=None):
     )
     print(response)
     
-    # Create a mock file object from the response
-    class MockFile:
-      def __init__(self, content, name):
-        self.content = content
-        self.name = name
-      
-      def get_bytes(self):
-        # Handle StreamingMedia object
-        if hasattr(self.content, 'get_bytes'):
-          return self.content.get_bytes()
-        elif isinstance(self.content, str):
-          return self.content.encode('utf-8')
-        elif isinstance(self.content, bytes):
-          return self.content
-        else:
-          return str(self.content).encode('utf-8')
+    # Get bytes from the response
+    if hasattr(response, 'get_bytes'):
+      csv_bytes = response.get_bytes()
+    else:
+      csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
     
-    # Create file object from response
-    csv_file = MockFile(response, 'airmaestro_api.csv')
-    
-    # Pass to receive_file with source='api'
-    result = receive_file(csv_file, rows_completed=0, source='api')
+    # Process the CSV data directly
+    result = process_csv_data(csv_bytes, source='api')
     
     return result
     
   except Exception as e:
     error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
+    print(error_msg)
+    raise Exception(error_msg)
+
+
+def process_csv_data(csv_bytes, source='api'):
+  """
+  Internal function to process CSV data from bytes and load into flights table.
+  
+  Args:
+    csv_bytes: CSV data as bytes
+    source: Source of the data (e.g., 'api', 'upload', 'email')
+    
+  Returns:
+    dict: {'complete': True, 'total_rows': int, 'rows_processed': int}
+  """
+  start_time = time.time()
+  
+  try:
+    # Read CSV with different encodings
+    try:
+      df = pd.read_csv(io.BytesIO(csv_bytes), encoding='utf-8')
+    except UnicodeDecodeError:
+      try:
+        df = pd.read_csv(io.BytesIO(csv_bytes), encoding='latin-1')
+      except Exception:
+        df = pd.read_csv(io.BytesIO(csv_bytes), encoding='iso-8859-1')
+    
+    # Check if the first row looks like data instead of headers
+    if df is not None and len(df) > 0:
+        # If all column names are generic (Unnamed) or numeric, assume no headers
+        unnamed_cols = sum(1 for col in df.columns if str(col).startswith('Unnamed') or isinstance(col, int))
+        
+        if unnamed_cols == len(df.columns):
+            # No headers detected - read again without header row
+            try:
+                df = pd.read_csv(io.BytesIO(csv_bytes), encoding='utf-8', header=None)
+            except UnicodeDecodeError:
+                try:
+                    df = pd.read_csv(io.BytesIO(csv_bytes), encoding='latin-1', header=None)
+                except Exception:
+                    df = pd.read_csv(io.BytesIO(csv_bytes), encoding='iso-8859-1', header=None)
+            
+            # Create default column names: Column_1, Column_2, etc.
+            df.columns = [f'Column_{i+1}' for i in range(len(df.columns))]
+        else:
+            # Clean up column names - replace NaN or empty strings
+            new_columns = []
+            for i, col in enumerate(df.columns):
+                if pd.isna(col) or str(col).strip() == '':
+                    new_columns.append(f'Column_{i+1}')
+                else:
+                    new_columns.append(str(col).strip())
+            df.columns = new_columns
+    
+    # Handle empty dataframe
+    if df is None or df.empty:
+        return {'complete': True, 'total_rows': 0, 'rows_processed': 0}
+    
+    # Replace NaN values with None for better JSON serialization
+    df = df.where(pd.notnull(df), None)
+    
+    # Ensure all column names are strings
+    df.columns = [str(col) for col in df.columns]
+    
+    # Convert all columns to strings to ensure consistency
+    df = df.astype(str)
+    
+    logger = ''
+    
+    # Convert to list of dictionaries
+    try:
+        data_list = df.to_dict('records')
+    except Exception as e:
+      logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
+      raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
+    
+    # Process each entry to ensure proper data types and remove NaN values
+    for entry in data_list:
+        # First pass: Check for and replace any remaining NaN values
+        for key in list(entry.keys()):
+            val = entry[key]
+            # Check if value is NaN (works for both float NaN and pandas NaT)
+            if val is not None and ((isinstance(val, float) and pd.isna(val)) or pd.isna(val)):
+                entry[key] = None
+        
+        # Convert FltDate to date object
+        if 'FltDate' in entry and entry['FltDate'] is not None:
+            try:
+                # Handle various date formats
+                date_value = entry['FltDate']
+                if isinstance(date_value, str):
+                    # Try parsing common date formats
+                    for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d']:
+                        try:
+                            entry['FltDate'] = datetime.strptime(date_value, fmt).date()
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        # If no format matched, try pandas parser
+                        entry['FltDate'] = pd.to_datetime(date_value).date()
+                elif isinstance(date_value, datetime):
+                    entry['FltDate'] = date_value.date()
+                elif hasattr(date_value, 'date'):
+                    entry['FltDate'] = date_value.date()
+            except Exception:
+                # If conversion fails, set to None
+                entry['FltDate'] = None
+        
+        # Convert Air Time to float or 0.0 if None/NaN
+        if 'Air Time' in entry:
+            try:
+                val = entry['Air Time']
+                if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
+                    entry['Air Time'] = 0.0
+                elif isinstance(val, float) and pd.isna(val):
+                    entry['Air Time'] = 0.0
+                else:
+                    entry['Air Time'] = float(val)
+            except (ValueError, TypeError):
+                entry['Air Time'] = 0.0
+        
+        # Convert Block Time to float or 0.0 if None/NaN
+        if 'Block Time' in entry:
+            try:
+                val = entry['Block Time']
+                if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
+                    entry['Block Time'] = 0.0
+                elif isinstance(val, float) and pd.isna(val):
+                    entry['Block Time'] = 0.0
+                else:
+                    entry['Block Time'] = float(val)
+            except (ValueError, TypeError):
+                entry['Block Time'] = 0.0
+        
+        # Convert all other fields to strings (except None values)
+        for key, value in entry.items():
+            if key not in ['FltDate', 'Air Time', 'Block Time']:
+                if value is not None:
+                    entry[key] = str(value)
+    
+    # Load the entire flights table into a list of dictionaries
+    logger += "\nStart compare: {t}".format(t=time.time())
+    col_names = [c['name'] for c in app_tables.flights.list_columns()]
+    
+    db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
+    logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
+    
+    # Remove entries in db_2 that already exist in db_1
+    db_2 = data_list
+    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
+    db_2 = [
+        entry for entry in db_2
+        if entry not in db_1
+    ]
+    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=time.time())
+    
+    app_tables.flights.add_rows(db_2)
+    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
+                                                                         s=len(db_2))
+    app_tables.logs.add_row(date=datetime.now(),
+                           results=logger,
+                           file=None,
+                           source=source)
+    print(logger)
+    return {
+        'complete': True,
+        'total_rows': len(data_list),
+        'rows_processed': len(db_2)
+    }
+    
+  except Exception as e:
+    error_msg = f"Error processing CSV data: {str(e)}"
     print(error_msg)
     raise Exception(error_msg)
