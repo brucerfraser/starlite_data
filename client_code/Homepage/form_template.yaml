@@ -40,6 +40,10 @@ components:
     name: btn_refresh
     properties: {role: outlined-button, text: Refresh data}
     type: Button
+  - layout_properties: {grid_position: 'UOGQEB,DIOCPZ'}
+    name: lbl_data_version
+    properties: {role: null}
+    type: Label
   layout_properties: {slot: left-nav}
   name: column_panel_1
   properties: {}
