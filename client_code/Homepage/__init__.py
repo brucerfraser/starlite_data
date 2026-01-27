@@ -14,7 +14,7 @@ class Homepage(HomepageTemplate):
     self.init_components(**properties)
     # Any code you write here will run when the form opens.
     result = local_data.load_up()
-    
+    print(result)
     # Format and display data version
     if result and result.get('latest_log_date'):
       latest_date = result['latest_log_date']
