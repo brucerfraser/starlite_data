@@ -2,6 +2,7 @@ import anvil.server
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from datetime import datetime, timezone, timedelta
 
 global FLIGHTS
 FLIGHTS = []
@@ -13,17 +14,26 @@ MONTH_NAMES = [
 ]
 
 def load_up():
-  """Load flight data and get latest data version info.
-  
-  Returns:
-    dict: {'latest_log_date': datetime} for display in UI
-  """
-  global FLIGHTS
-  FLIGHTS = anvil.server.call('flight_records')
-  
-  # Call api_handler to get latest log date
-  result = anvil.server.call('api_handler')
-  return result
+    """Load flight data and get latest data version info.
+    
+    Returns:
+        dict: {'latest_log_date': datetime} for display in UI
+    """
+    global FLIGHTS
+    FLIGHTS = anvil.server.call('flight_records')
+    
+    # Call api_handler to get latest log date
+    result = anvil.server.call('api_handler')
+    
+    # Adjust the latest_log_date to local time
+    if 'latest_log_date' in result:
+        utc_time = result['latest_log_date']
+        # Define your local time zone offset (e.g., UTC-5 for EST without DST)
+        local_offset = timedelta(hours=-5)  # Replace with your local offset
+        local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(local_offset))
+        result['latest_log_date'] = local_time
+    
+    return result
 
 def package_flights(package):
     """
