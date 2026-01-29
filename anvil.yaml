@@ -22,11 +22,11 @@ db_schema:
     - admin_ui: {width: 200}
       name: CFF_Base_of_Operation
       type: string
-    - admin_ui: {width: 200}
-      name: Air Time
+    - admin_ui: {order: 6, width: 200}
+      name: CFL_Air_time
       type: number
-    - admin_ui: {width: 200}
-      name: Block Time
+    - admin_ui: {order: 7, width: 200}
+      name: CFL_Block_Time
       type: number
     - admin_ui: {order: 8, width: 200}
       name: Takeoff Time
