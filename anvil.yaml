@@ -28,6 +28,9 @@ db_schema:
     - admin_ui: {width: 200}
       name: Block Time
       type: number
+    - admin_ui: {order: 8, width: 200}
+      name: Takeoff Time
+      type: string
     server: full
     title: flights
   logs:
