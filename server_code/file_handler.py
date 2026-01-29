@@ -299,9 +299,9 @@ def api_handler(dates=None):
   
   # Always check for latest log date regardless of API call success
   try:
-    logs = app_tables.logs.search(q.order_by('date', ascending=False), q.limit(1))
+    logs = app_tables.logs.search(tables.order_by('date', ascending=False))[0]
     if logs:
-      latest_log = list(logs)[0]
+      latest_log = dict(logs)
       result['latest_log_date'] = latest_log['date']
   except Exception as e:
     print(f"Error retrieving latest log date: {str(e)}")
