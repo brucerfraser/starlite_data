@@ -21,14 +21,15 @@ class records(recordsTemplate):
   def form_show(self, **event_args):
     # Get the current year
     self.load_controls()
-    current_year = datetime.now().year
+    self.act(package=self.controller.package)
+    # current_year = datetime.now().year
 
-    # Filter FLIGHTS for the current year and sort by date (newest to oldest)
-    self.rp_records.items = sorted(
-        [flight for flight in FLIGHTS if flight.get('FltDate') and flight['FltDate'].year == current_year],
-        key=lambda x: x['FltDate'],
-        reverse=True
-    )
+    # # Filter FLIGHTS for the current year and sort by date (newest to oldest)
+    # self.rp_records.items = sorted(
+    #     [flight for flight in FLIGHTS if flight.get('FltDate') and flight['FltDate'].year == current_year],
+    #     key=lambda x: x['FltDate'],
+    #     reverse=True
+    # )
 
   def load_controls(self,**event_args):
     from ..comp_controls import comp_controls

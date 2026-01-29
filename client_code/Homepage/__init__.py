@@ -14,19 +14,9 @@ class Homepage(HomepageTemplate):
     self.init_components(**properties)
     # Any code you write here will run when the form opens.
     result = local_data.load_up()
-    print(result)
+    # print(result)
     # Format and display data version
-    if result and result.get('latest_log_date'):
-      latest_date = result['latest_log_date']
-      today = datetime.now().date()
-      
-      # If date is today, show time; otherwise show date
-      if latest_date.date() == today:
-        date_str = latest_date.strftime('%H:%M')
-      else:
-        date_str = latest_date.strftime('%d %b')
-      
-      self.lbl_data_version.text = f"Data version:\nFlight records: {date_str}"
+    self.update_data_label(result)
     
     self.btn_records_click()
     
@@ -50,6 +40,7 @@ class Homepage(HomepageTemplate):
         if complete:
           msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
                                                                           s=rows_completed)
+          self.update_data_label(result)
           alert(msg)
         else:
           print(f"Rows completed: {rows_completed}")
@@ -76,6 +67,20 @@ class Homepage(HomepageTemplate):
     if complete:
       msg = "API retrieved data, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
                                                                        s=rows_completed)
+      self.update_data_label(result)
       alert(msg)
     else:
       alert("API call unsuccessful")
+
+  def update_data_label(self,result=None,**event_args):
+    if result and result.get('latest_log_date'):
+      latest_date = result['latest_log_date']
+      today = datetime.now().date()
+
+      # If date is today, show time; otherwise show date
+      if latest_date.date() == today:
+        date_str = latest_date.strftime('%H:%M')
+      else:
+        date_str = latest_date.strftime('%d %b')
+
+      self.lbl_data_version.text = f"Data version:\nFlight records: {date_str}"
