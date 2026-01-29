@@ -29,7 +29,7 @@ def load_up():
     if 'latest_log_date' in result:
         utc_time = result['latest_log_date']
         # Define your local time zone offset (e.g., UTC-5 for EST without DST)
-        local_offset = timedelta(hours=-5)  # Replace with your local offset
+        local_offset = timedelta(hours=+2)  # Replace with your local offset
         local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(local_offset))
         result['latest_log_date'] = local_time
     
