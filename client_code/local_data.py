@@ -77,6 +77,6 @@ def package_flights(package):
     h = sum(flight.get('Block Time', 0) or 0 for flight in sorted_flights)
 
     # Create the label text
-    label = f"{n} flights, {h} hours"
+    label = f"{n} flights, {h:.1f} hours"
 
     return {'label': label, 'sorted_flights': sorted_flights}
