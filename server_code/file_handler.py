@@ -516,58 +516,58 @@ def process_csv_data(csv_bytes, source='api'):
                 entry[key] = None
         
         # Convert FltDate to date object
-        if 'FltDate' in entry and entry['FltDate'] is not None:
+        if FLT_DATE_COLUMN in entry and entry[FLT_DATE_COLUMN] is not None:
             try:
                 # Handle various date formats
-                date_value = entry['FltDate']
+                date_value = entry[FLT_DATE_COLUMN]
                 if isinstance(date_value, str):
                     # Try parsing common date formats
                     for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d']:
                         try:
-                            entry['FltDate'] = datetime.strptime(date_value, fmt).date()
+                            entry[FLT_DATE_COLUMN] = datetime.strptime(date_value, fmt).date()
                             break
                         except ValueError:
                             continue
                     else:
                         # If no format matched, try pandas parser
-                        entry['FltDate'] = pd.to_datetime(date_value).date()
+                        entry[FLT_DATE_COLUMN] = pd.to_datetime(date_value).date()
                 elif isinstance(date_value, datetime):
-                    entry['FltDate'] = date_value.date()
+                    entry[FLT_DATE_COLUMN] = date_value.date()
                 elif hasattr(date_value, 'date'):
-                    entry['FltDate'] = date_value.date()
+                    entry[FLT_DATE_COLUMN] = date_value.date()
             except Exception:
                 # If conversion fails, set to None
-                entry['FltDate'] = None
+                entry[FLT_DATE_COLUMN] = None
         
         # Convert Air Time to float or 0.0 if None/NaN
-        if 'Air Time' in entry:
+        if AIR_TIME_COLUMN in entry:
             try:
-                val = entry['Air Time']
+                val = entry[AIR_TIME_COLUMN]
                 if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                    entry['Air Time'] = 0.0
+                    entry[AIR_TIME_COLUMN] = 0.0
                 elif isinstance(val, float) and pd.isna(val):
-                    entry['Air Time'] = 0.0
+                    entry[AIR_TIME_COLUMN] = 0.0
                 else:
-                    entry['Air Time'] = float(val)
+                    entry[AIR_TIME_COLUMN] = float(val)
             except (ValueError, TypeError):
-                entry['Air Time'] = 0.0
+                entry[AIR_TIME_COLUMN] = 0.0
         
         # Convert Block Time to float or 0.0 if None/NaN
-        if 'Block Time' in entry:
+        if BLOCK_TIME_COLUMN in entry:
             try:
-                val = entry['Block Time']
+                val = entry[BLOCK_TIME_COLUMN]
                 if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                    entry['Block Time'] = 0.0
+                    entry[BLOCK_TIME_COLUMN] = 0.0
                 elif isinstance(val, float) and pd.isna(val):
-                    entry['Block Time'] = 0.0
+                    entry[BLOCK_TIME_COLUMN] = 0.0
                 else:
-                    entry['Block Time'] = float(val)
+                    entry[BLOCK_TIME_COLUMN] = float(val)
             except (ValueError, TypeError):
-                entry['Block Time'] = 0.0
+                entry[BLOCK_TIME_COLUMN] = 0.0
         
         # Convert all other fields to strings (except None values)
         for key, value in entry.items():
-            if key not in ['FltDate', 'Air Time', 'Block Time', TAKEOFF_TIME_COLUMN]:
+            if key not in [FLT_DATE_COLUMN, AIR_TIME_COLUMN, BLOCK_TIME_COLUMN, TAKEOFF_TIME_COLUMN]:
                 if value is not None:
                     entry[key] = str(value)
     
