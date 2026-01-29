@@ -23,7 +23,7 @@ db_schema:
       name: CFF_Base_of_Operation
       type: string
     - admin_ui: {order: 6, width: 200}
-      name: CFL_Air_time
+      name: CFL_Air_Time
       type: number
     - admin_ui: {order: 7, width: 200}
       name: CFL_Block_Time
