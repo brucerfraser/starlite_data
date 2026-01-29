@@ -10,6 +10,122 @@ from datetime import datetime, timedelta
 import time
 import anvil.http
 
+TAKEOFF_TIME_COLUMN = 'Takeoff Time'
+
+def _normalize_text(value):
+    if value is None:
+        return None
+    if isinstance(value, float) and pd.isna(value):
+        return None
+    text = str(value).strip()
+    if text.lower() in ['', 'nan', 'none']:
+        return None
+    return text.casefold()
+
+def _normalize_takeoff_time(value):
+    if value is None:
+        return None
+    if isinstance(value, float) and pd.isna(value):
+        return None
+    text = str(value).strip()
+    if text.lower() in ['', 'nan', 'none']:
+        return None
+    if ':' in text:
+        parts = text.split(':')
+        if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
+            text = f"{int(parts[0]):02d}{int(parts[1]):02d}"
+    text = ''.join(ch for ch in text if ch.isdigit())
+    if text == '':
+        return None
+    if len(text) <= 4:
+        return text.zfill(4)
+    return text
+
+def _normalize_date(value):
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date()
+    if hasattr(value, 'date'):
+        try:
+            return value.date()
+        except Exception:
+            pass
+    if isinstance(value, str):
+        text = value.strip()
+        if text.lower() in ['', 'nan', 'none']:
+            return None
+        for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d']:
+            try:
+                return datetime.strptime(text, fmt).date()
+            except ValueError:
+                continue
+        try:
+            return pd.to_datetime(text).date()
+        except Exception:
+            return None
+    return None
+
+def _normalize_float(value, default=0.0):
+    if value is None:
+        return default
+    if isinstance(value, float) and pd.isna(value):
+        return default
+    if isinstance(value, str) and value.strip().lower() in ['', 'nan', 'none']:
+        return default
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+def _select_dedupe_columns(available_columns):
+    preferred = [
+        'FltDate',
+        TAKEOFF_TIME_COLUMN,
+        'Flight',
+        'Flight No',
+        'FlightNo',
+        'Callsign',
+        'Tail',
+        'Reg',
+        'Aircraft',
+        'From',
+        'To',
+        'Origin',
+        'Destination',
+        'Sector'
+    ]
+    columns = [col for col in preferred if col in available_columns]
+    if not columns:
+        columns = sorted(available_columns)
+    return columns
+
+def _make_dedupe_key(entry, key_columns):
+    key_values = []
+    for col in key_columns:
+        val = entry.get(col)
+        if col == 'FltDate':
+            key_values.append(_normalize_date(val))
+        elif col in ('Air Time', 'Block Time'):
+            key_values.append(_normalize_float(val))
+        elif col == TAKEOFF_TIME_COLUMN:
+            key_values.append(_normalize_takeoff_time(val))
+        else:
+            key_values.append(_normalize_text(val))
+    return tuple(key_values)
+
+def _dedupe_entries(db_rows, incoming_rows, key_columns):
+    db_keys = set(_make_dedupe_key(row, key_columns) for row in db_rows)
+    new_keys = set()
+    filtered = []
+    for entry in incoming_rows:
+        key = _make_dedupe_key(entry, key_columns)
+        if key in db_keys or key in new_keys:
+            continue
+        new_keys.add(key)
+        filtered.append(entry)
+    return filtered
+
 @anvil.server.callable
 def flight_records():
   col_names = [c['name'] for c in app_tables.flights.list_columns()]
@@ -154,6 +270,14 @@ def receive_file(file, rows_completed=0,source='upload'):
             except Exception:
                 # If conversion fails, set to None
                 entry['FltDate'] = None
+
+        # Normalize Takeoff Time to HHMM string
+        if TAKEOFF_TIME_COLUMN in entry:
+            entry[TAKEOFF_TIME_COLUMN] = _normalize_takeoff_time(entry.get(TAKEOFF_TIME_COLUMN))
+
+        # Normalize Takeoff Time to HHMM string
+        if TAKEOFF_TIME_COLUMN in entry:
+            entry[TAKEOFF_TIME_COLUMN] = _normalize_takeoff_time(entry.get(TAKEOFF_TIME_COLUMN))
         
         # Convert Air Time to float or 0.0 if None/NaN
         if 'Air Time' in entry:
@@ -183,7 +307,7 @@ def receive_file(file, rows_completed=0,source='upload'):
         
         # Convert all other fields to strings (except None values)
         for key, value in entry.items():
-            if key not in ['FltDate', 'Air Time', 'Block Time']:
+            if key not in ['FltDate', 'Air Time', 'Block Time', TAKEOFF_TIME_COLUMN]:
                 if value is not None:
                     entry[key] = str(value)
     
@@ -194,14 +318,19 @@ def receive_file(file, rows_completed=0,source='upload'):
     db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
     logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
   
-    # Remove entries in db_2 that already exist in db_1
+    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
     db_2 = data_list
     logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    db_2 = [
-        entry for entry in db_2
-        if entry not in db_1
-    ]
-    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=time.time())
+    available_columns = set()
+    for entry in db_2:
+        available_columns.update(entry.keys())
+    key_columns = _select_dedupe_columns(available_columns)
+    db_2 = _dedupe_entries(db_1, db_2, key_columns)
+    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
+        s=len(db_2),
+        t=time.time(),
+        c=key_columns
+    )
     
     app_tables.flights.add_rows(db_2)
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
@@ -442,7 +571,7 @@ def process_csv_data(csv_bytes, source='api'):
         
         # Convert all other fields to strings (except None values)
         for key, value in entry.items():
-            if key not in ['FltDate', 'Air Time', 'Block Time']:
+            if key not in ['FltDate', 'Air Time', 'Block Time', TAKEOFF_TIME_COLUMN]:
                 if value is not None:
                     entry[key] = str(value)
     
@@ -453,14 +582,19 @@ def process_csv_data(csv_bytes, source='api'):
     db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
     logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
     
-    # Remove entries in db_2 that already exist in db_1
+    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
     db_2 = data_list
     logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    db_2 = [
-        entry for entry in db_2
-        if entry not in db_1
-    ]
-    logger += "\nFile after strip: {s}, Time after strip: {t}".format(s=len(db_2),t=time.time())
+    available_columns = set()
+    for entry in db_2:
+        available_columns.update(entry.keys())
+    key_columns = _select_dedupe_columns(available_columns)
+    db_2 = _dedupe_entries(db_1, db_2, key_columns)
+    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
+        s=len(db_2),
+        t=time.time(),
+        c=key_columns
+    )
     
     app_tables.flights.add_rows(db_2)
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
