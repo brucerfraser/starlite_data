@@ -25,7 +25,8 @@ def create_graphs(package):
         list: A list of (traces, layout) tuples for Plotly graphs.
     """
     # Filter FLIGHTS data using the package
-    flights = package_flights(package)
+    result = package_flights(package)
+    flights = result["sorted_flights"]
 
     # amend filter to get previous year's flights with same criteria
     prev_package = package.copy()
