@@ -15,7 +15,7 @@ class summary_form(summary_formTemplate):
     self.flights = flights
 
     # Populate the dropdown with summary options
-    self.dd_summary.items = [
+    self.dd_summary_type.items = [
         ("By Registration", "rego"),
         ("By Type", "type"),
         ("By Client", "client"),
@@ -23,11 +23,12 @@ class summary_form(summary_formTemplate):
     ]
 
     # Set the default dropdown value
-    self.dd_summary.selected_value = "rego"
+    self.dd_summary_type.selected_value = "rego"
 
     # Call the update function to populate the summary
     self.update_summary()
 
+  @handle('dd_summary_type','change')
   def dd_summary_change(self, **event_args):
     """Called when the dropdown value changes."""
     self.update_summary()
@@ -35,7 +36,7 @@ class summary_form(summary_formTemplate):
   def update_summary(self):
     """Update the RichText component based on the selected summary type."""
     # Get the selected summary type
-    summary_type = self.dd_summary.selected_value
+    summary_type = self.dd_summary_type.selected_value
 
     # Group flights based on the selected summary type
     if summary_type == "rego":
@@ -82,3 +83,7 @@ class summary_form(summary_formTemplate):
     {summary_period}
     {summary_items}
     """
+
+  @handle('btn_close','click')
+  def close_me(self,**event_args):
+    self.raise_event('x-close-alert')

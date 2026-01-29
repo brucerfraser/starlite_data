@@ -6,7 +6,7 @@ components:
     type: DropDown
   - layout_properties: {full_width_row: true, grid_position: 'DVXBWM,PXJIWM'}
     name: rt_summary
-    properties: {}
+    properties: {format: restricted_html}
     type: RichText
   - components:
     - layout_properties: {}

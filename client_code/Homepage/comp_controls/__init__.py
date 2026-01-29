@@ -4,8 +4,9 @@ import anvil.server
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ...local_data import FLIGHTS
+from ...local_data import FLIGHTS,package_flights
 from datetime import datetime
+
 
 
 class comp_controls(comp_controlsTemplate):
@@ -129,3 +130,10 @@ class comp_controls(comp_controlsTemplate):
 
   def send_pack(self, **event_args):
     self.parent.raise_event('x-listen', package=self.package)
+
+  @handle('btn_more','click')
+  def more_summary(self,**event_args):
+    from ...pop_ups.summary_form import summary_form
+    result = package_flights(self.package)
+    sum = summary_form(flights=result['sorted_flights'])
+    alert(sum,buttons=[],large=True)
