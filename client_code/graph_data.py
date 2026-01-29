@@ -30,7 +30,8 @@ def create_graphs(package):
     # amend filter to get previous year's flights with same criteria
     prev_package = package.copy()
     prev_package['years'] = [str(int(year) - 1) for year in package['years']]
-    prev_flights = package_flights(prev_package)
+    result = package_flights(prev_package)
+    prev_flights = result['sorted_flights']
 
     # Prepare data for graphs
     months = MONTH_NAMES
@@ -134,4 +135,4 @@ def create_graphs(package):
     }
     graphs.append((traces, layout))
 
-    return graphs
+    return {'graphs':graphs,'label':result['label']}

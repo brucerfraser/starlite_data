@@ -44,7 +44,9 @@ def package_flights(package):
                         each containing a list of strings.
 
     Returns:
-        list: Filtered and sorted list of flights.
+        dict: {'label': str, 'sorted_flights': list}
+              - label: A string summarizing the number of flights and total block hours.
+              - sorted_flights: A list of filtered and sorted flights.
     """
     global FLIGHTS
 
@@ -70,4 +72,11 @@ def package_flights(package):
     # Sort the filtered flights by date (newest to oldest)
     sorted_flights = sorted(filtered_flights, key=lambda x: x['FltDate'], reverse=True)
 
-    return sorted_flights
+    # Calculate the total number of flights and total block hours
+    n = len(sorted_flights)
+    h = sum(flight.get('Block Time', 0) or 0 for flight in sorted_flights)
+
+    # Create the label text
+    label = f"{n} flights, {h} hours"
+
+    return {'label': label, 'sorted_flights': sorted_flights}

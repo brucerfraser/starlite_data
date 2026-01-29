@@ -32,7 +32,8 @@ class dashboards(dashboardsTemplate):
     self.graphs_panel.clear()
 
     # Generate graphs using the graph_data module
-    graphs = create_graphs(package)
+    result = create_graphs(package)
+    graphs = result['graphs']
 
     # Ensure there are exactly 4 graphs (fill with placeholders if needed)
     while len(graphs) < 4:
@@ -43,6 +44,8 @@ class dashboards(dashboardsTemplate):
     self.graphs_panel.add_component(self._make_plot(*graphs[1]), row=0, col_xs=6, width_xs=6)
     self.graphs_panel.add_component(self._make_plot(*graphs[2]), row=1, col_xs=0, width_xs=6)
     self.graphs_panel.add_component(self._make_plot(*graphs[3]), row=1, col_xs=6, width_xs=6)
+
+    self.controller.lbl_summary.text = result.get('label', '')
 
   def _make_plot(self, traces, layout, *, height=320, interactive=True):
     """

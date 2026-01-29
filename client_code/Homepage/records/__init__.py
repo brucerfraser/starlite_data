@@ -36,4 +36,6 @@ class records(recordsTemplate):
     self.cp_controls.add_component(self.controller)
 
   def act(self,package,**event_args):
-    self.rp_records.items = local_data.package_flights(package)
+    result = local_data.package_flights(package)
+    self.rp_records.items = result['sorted_flights']
+    self.controller.lbl_summary.text = result['label']
