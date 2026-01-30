@@ -489,7 +489,7 @@ def process_csv_data(csv_bytes, source='api'):
     return {
         'complete': True,
         'total_rows': len(data_list),
-        'rows_processed': len(db_2)
+        'rows_processed': len([d for d in db_2 if not d.get('duplicate', False)])
     }
     
   except Exception as e:
