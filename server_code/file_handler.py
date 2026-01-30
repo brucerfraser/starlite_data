@@ -463,7 +463,7 @@ def process_csv_data(csv_bytes, source='api'):
     # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
     db_2 = data_list
     logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    available_columns = set()
+    
     # we have to check if it's in db_1 first
     for entry in db_2:
         entry['duplicate'] = de_deuplicate(entry,db_1)

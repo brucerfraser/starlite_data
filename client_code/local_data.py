@@ -35,7 +35,11 @@ def load_up():
     
     # Call api_handler to get latest log date
     # result = anvil.server.call('api_handler')
-    
+    result = {
+        'complete': True,
+        'total_rows': len(data_list),
+        'rows_processed': len(db_2)
+    }
     # Adjust the latest_log_date to local time
     if 'latest_log_date' in result:
         utc_time = result['latest_log_date']
