@@ -4,6 +4,15 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from datetime import datetime, timezone, timedelta
 
+# Define constants for column names
+FLT_DATE_COLUMN = 'FltDate'
+BLOCK_TIME_COLUMN = 'Block Time'
+AIR_TIME_COLUMN = 'Air Time'
+REGO_COLUMN = 'Rego'
+AC_TYPE_COLUMN = 'ACType'
+CLIENT_COLUMN = 'CFF_Client'
+BASE_OF_OPERATION_COLUMN = 'CFF_Base_of_Operation'
+
 global FLIGHTS
 FLIGHTS = []
 
@@ -61,20 +70,20 @@ def package_flights(package):
     # Filter FLIGHTS based on the package criteria
     filtered_flights = [
         flight for flight in FLIGHTS
-        if str(flight['FltDate'].year) in years and
-           MONTH_NAMES[flight['FltDate'].month - 1] in months and
-           flight['ACType'] in ac_types and
-           flight['Rego'] in regos and
-           flight['CFF_Base_of_Operation'] in cff_bases and
-           flight['CFF_Client'] in cff_clients
+        if str(flight[FLT_DATE_COLUMN].year) in years and
+           MONTH_NAMES[flight[FLT_DATE_COLUMN].month - 1] in months and
+           flight[AC_TYPE_COLUMN] in ac_types and
+           flight[REGO_COLUMN] in regos and
+           flight[BASE_OF_OPERATION_COLUMN] in cff_bases and
+           flight[CLIENT_COLUMN] in cff_clients
     ]
 
     # Sort the filtered flights by date (newest to oldest)
-    sorted_flights = sorted(filtered_flights, key=lambda x: x['FltDate'], reverse=True)
+    sorted_flights = sorted(filtered_flights, key=lambda x: x[FLT_DATE_COLUMN], reverse=True)
 
     # Calculate the total number of flights and total block hours
     n = len(sorted_flights)
-    h = sum(flight.get('Block Time', 0) or 0 for flight in sorted_flights)
+    h = sum(flight.get(BLOCK_TIME_COLUMN, 0) or 0 for flight in sorted_flights)
 
     # Create the label text
     label = f"{n} flights, {h:.1f} hours"

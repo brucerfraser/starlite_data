@@ -3,8 +3,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import plotly.graph_objects as go
-from .local_data import package_flights, MONTH_NAMES
-
+from .local_data import package_flights, MONTH_NAMES,FLT_DATE_COLUMN, BLOCK_TIME_COLUMN, AIR_TIME_COLUMN, REGO_COLUMN, AC_TYPE_COLUMN, CLIENT_COLUMN, BASE_OF_OPERATION_COLUMN
 # This is a module.
 # You can define variables and functions here, and use them from any form. For example, in a top-level form:
 #
@@ -42,24 +41,24 @@ def create_graphs(package):
     flight_hours_comparison = {month: {'current_year': 0, 'previous_year': 0} for month in months}
 
     for flight in flights:
-        month_name = MONTH_NAMES[flight['FltDate'].month - 1]
-        flight_hours_by_month[month_name] += flight['Block Time'] or 0
+        month_name = MONTH_NAMES[flight[FLT_DATE_COLUMN].month - 1]
+        flight_hours_by_month[month_name] += flight[BLOCK_TIME_COLUMN] or 0
 
-        aircraft = flight['Rego']
-        flight_hours_by_aircraft[aircraft] = flight_hours_by_aircraft.get(aircraft, 0) + (flight['Block Time'] or 0)
+        aircraft = flight[REGO_COLUMN]
+        flight_hours_by_aircraft[aircraft] = flight_hours_by_aircraft.get(aircraft, 0) + (flight[BLOCK_TIME_COLUMN] or 0)
 
-        contract = flight['CFF_Client']
-        flight_hours_by_contract[contract] = flight_hours_by_contract.get(contract, 0) + (flight['Block Time'] or 0)
+        contract = flight[CLIENT_COLUMN]
+        flight_hours_by_contract[contract] = flight_hours_by_contract.get(contract, 0) + (flight[BLOCK_TIME_COLUMN] or 0)
 
-        year = flight['FltDate'].year
+        year = flight[FLT_DATE_COLUMN].year
         if year == int(package['years'][0]):  # Current year
-            flight_hours_comparison[month_name]['current_year'] += flight['Block Time'] or 0
+            flight_hours_comparison[month_name]['current_year'] += flight[BLOCK_TIME_COLUMN] or 0
     
     for flight in prev_flights:
-        month_name = MONTH_NAMES[flight['FltDate'].month - 1]
-        year = flight['FltDate'].year
+        month_name = MONTH_NAMES[flight[FLT_DATE_COLUMN].month - 1]
+        year = flight[FLT_DATE_COLUMN].year
         if year == int(prev_package['years'][0]):  # Previous year
-            flight_hours_comparison[month_name]['previous_year'] += flight['Block Time'] or 0
+            flight_hours_comparison[month_name]['previous_year'] += flight[BLOCK_TIME_COLUMN] or 0
 
     
     # Create graphs

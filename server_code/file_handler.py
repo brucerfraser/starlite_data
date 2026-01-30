@@ -10,10 +10,18 @@ from datetime import datetime, timedelta
 import time
 import anvil.http
 
+# Define constants for column names
 TAKEOFF_TIME_COLUMN = 'Takeoff Time'
 FLT_DATE_COLUMN = 'FltDate'
 AIR_TIME_COLUMN = 'CFL_Air_Time'
 BLOCK_TIME_COLUMN = 'CFL_Block_Time'
+REGO_COLUMN = 'Rego'
+AC_TYPE_COLUMN = 'ACType'
+AD_HOC_CLIENT_NAME_COLUMN = 'CFF_Ad_Hoc_Client_Name'
+CLIENT_COLUMN = 'CFF_Client'
+BASE_OF_OPERATION_COLUMN = 'CFF_Base_of_Operation'
+
+# Update all references to column names in the file to use these constants
 
 def _normalize_text(value):
     if value is None:
@@ -85,11 +93,11 @@ def _select_dedupe_columns(available_columns):
     preferred = [
         FLT_DATE_COLUMN,
         TAKEOFF_TIME_COLUMN,
-        'Rego',
-        'ACType',
-        'CFF_Ad_Hoc_Client_Name',
-        'CFF_Client',
-        'CFF_Base_of_Operation'
+        REGO_COLUMN,
+        AC_TYPE_COLUMN,
+        AD_HOC_CLIENT_NAME_COLUMN,
+        CLIENT_COLUMN,
+        BASE_OF_OPERATION_COLUMN
     ]
     columns = [col for col in preferred if col in available_columns]
     if not columns:
@@ -124,11 +132,11 @@ def _dedupe_entries(db_rows, incoming_rows, key_columns):
 
 @anvil.server.callable
 def flight_records():
-  col_names = [c['name'] for c in app_tables.flights.list_columns()]
-  return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
+    col_names = [c['name'] for c in app_tables.flights.list_columns()]
+    return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
 @anvil.server.callable
-def receive_file(file, rows_completed=0,source='upload'):
+def receive_file(file, rows_completed=0, source='upload'):
     """
     Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
