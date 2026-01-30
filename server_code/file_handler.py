@@ -223,7 +223,6 @@ def receive_file(file, rows_completed=0, source='upload'):
     if df is None or df.empty:
         return {'total_rows': 0, 'added_rows': 0}
 
-
     # Replace NaN values with None for better JSON serialization
     df = df.where(pd.notnull(df), None)
 
@@ -232,122 +231,38 @@ def receive_file(file, rows_completed=0, source='upload'):
 
     # Convert all columns to strings to ensure consistency
     df = df.astype(str)
-    # Start logger text
+# Start logger text
     logger = ''
     # Convert to list of dictionaries
-    
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-      logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
-      raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
+        logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
+        raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
     for entry in data_list:
-        # First pass: Check for and replace any remaining NaN values
-        for key in list(entry.keys()):
-            val = entry[key]
-            # Check if value is NaN (works for both float NaN and pandas NaT)
-            if val is not None and ((isinstance(val, float) and pd.isna(val)) or pd.isna(val)):
-                entry[key] = None
-        
-        # Convert FltDate to date object
-        if FLT_DATE_COLUMN in entry and entry[FLT_DATE_COLUMN] is not None:
-            try:
-                # Handle various date formats
-                date_value = entry[FLT_DATE_COLUMN]
-                if isinstance(date_value, str):
-                    # Try parsing common date formats
-                    for fmt in ['%d/%m/%Y', '%m/%d/%Y', '%Y-%m-%d', '%d-%m-%Y', '%Y/%m/%d']:
-                        try:
-                            entry[FLT_DATE_COLUMN] = datetime.strptime(date_value, fmt).date()
-                            break
-                        except ValueError:
-                            continue
-                    else:
-                        # If no format matched, try pandas parser
-                        entry[FLT_DATE_COLUMN] = pd.to_datetime(date_value).date()
-                elif isinstance(date_value, datetime):
-                    entry[FLT_DATE_COLUMN] = date_value.date()
-                elif hasattr(date_value, 'date'):
-                    entry[FLT_DATE_COLUMN] = date_value.date()
-            except Exception:
-                # If conversion fails, set to None
-                entry[FLT_DATE_COLUMN] = None
-
-        # Normalize Takeoff Time to HHMM string
-        if TAKEOFF_TIME_COLUMN in entry:
-            entry[TAKEOFF_TIME_COLUMN] = _normalize_takeoff_time(entry.get(TAKEOFF_TIME_COLUMN))
-
-        # Normalize Takeoff Time to HHMM string
+        # Normalize Takeoff Time
         if TAKEOFF_TIME_COLUMN in entry:
             entry[TAKEOFF_TIME_COLUMN] = _normalize_takeoff_time(entry.get(TAKEOFF_TIME_COLUMN))
         
-        # Convert Air Time to float or 0.0 if None/NaN
+        # Normalize FltDate
+        if FLT_DATE_COLUMN in entry:
+            entry[FLT_DATE_COLUMN] = _normalize_date(entry.get(FLT_DATE_COLUMN))
+        
+        # Normalize Air Time and Block Time
         if AIR_TIME_COLUMN in entry:
-            try:
-                val = entry[AIR_TIME_COLUMN]
-                if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                    entry[AIR_TIME_COLUMN] = 0.0
-                elif isinstance(val, float) and pd.isna(val):
-                    entry[AIR_TIME_COLUMN] = 0.0
-                else:
-                    entry[AIR_TIME_COLUMN] = float(val)
-            except (ValueError, TypeError):
-                entry[AIR_TIME_COLUMN] = 0.0
-        
-        # Convert Block Time to float or 0.0 if None/NaN
+            entry[AIR_TIME_COLUMN] = _normalize_float(entry.get(AIR_TIME_COLUMN))
         if BLOCK_TIME_COLUMN in entry:
-            try:
-                val = entry[BLOCK_TIME_COLUMN]
-                if val is None or (isinstance(val, str) and val.strip().lower() in ['', 'nan', 'none']):
-                    entry[BLOCK_TIME_COLUMN] = 0.0
-                elif isinstance(val, float) and pd.isna(val):
-                    entry[BLOCK_TIME_COLUMN] = 0.0
-                else:
-                    entry[BLOCK_TIME_COLUMN] = float(val)
-            except (ValueError, TypeError):
-                entry[BLOCK_TIME_COLUMN] = 0.0
-        
-        # Convert all other fields to strings (except None values)
-        for key, value in entry.items():
-            if key not in [FLT_DATE_COLUMN, AIR_TIME_COLUMN, BLOCK_TIME_COLUMN, TAKEOFF_TIME_COLUMN]:
-                if value is not None:
-                    entry[key] = str(value)
+            entry[BLOCK_TIME_COLUMN] = _normalize_float(entry.get(BLOCK_TIME_COLUMN))
     
-    # Load the entire flights table into a list of dictionaries (db_1)
-    logger += "\nStart compare: {t}".format(t=time.time())
-    col_names = [c['name'] for c in app_tables.flights.list_columns()]
-
-    db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
-    logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
-  
-    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
-    db_2 = data_list
-    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    available_columns = set()
-    for entry in db_2:
-        available_columns.update(entry.keys())
-    key_columns = _select_dedupe_columns(available_columns)
-    db_2 = _dedupe_entries(db_1, db_2, key_columns)
-    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
-        s=len(db_2),
-        t=time.time(),
-        c=key_columns
-    )
+    # Add all rows to the flights table
+    app_tables.flights.add_rows(data_list)
     
-    app_tables.flights.add_rows(db_2)
-    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
-                                                                         s=len(db_2))
-    app_tables.logs.add_row(date=datetime.now(),
-                           results=logger,
-                           file=file,
-                           source=source)
-    print(logger)
     return {
         'complete': True,
         'total_rows': len(data_list),
-        'rows_processed': len(db_2)
+        'rows_processed': len(data_list)
     }
 
 @anvil.email.handle_message
