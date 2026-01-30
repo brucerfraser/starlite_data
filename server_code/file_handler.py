@@ -96,6 +96,11 @@ def flight_records():
 
 @anvil.server.callable
 def receive_file(file, rows_completed=0, source='upload'):
+    pass
+
+
+@anvil.server.callable
+def receive_file_old(file, rows_completed=0, source='upload'):
     """
     Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
