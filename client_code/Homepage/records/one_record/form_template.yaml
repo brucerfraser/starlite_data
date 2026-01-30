@@ -31,13 +31,13 @@ components:
     properties: {}
     type: Label
   - data_bindings:
-    - {code: 'self.item[''Air Time'']', property: text, writeback: false}
+    - {code: 'self.item[''CFL_Air_Time'']', property: text, writeback: false}
     layout_properties: {grid_position: 'BMSSZG,TSWZLG'}
     name: lbl_air_time
     properties: {}
     type: Label
   - data_bindings:
-    - {code: 'self.item[''Block Time'']', property: text, writeback: false}
+    - {code: 'self.item[''CFL_Block_Time'']', property: text, writeback: false}
     layout_properties: {grid_position: 'BMSSZG,NYKDGR'}
     name: lbl_block_time
     properties: {}
