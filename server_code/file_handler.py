@@ -89,47 +89,6 @@ def _normalize_float(value, default=0.0):
     except (ValueError, TypeError):
         return default
 
-def _select_dedupe_columns(available_columns):
-    preferred = [
-        FLT_DATE_COLUMN,
-        TAKEOFF_TIME_COLUMN,
-        REGO_COLUMN,
-        AC_TYPE_COLUMN,
-        AD_HOC_CLIENT_NAME_COLUMN,
-        CLIENT_COLUMN,
-        BASE_OF_OPERATION_COLUMN
-    ]
-    columns = [col for col in preferred if col in available_columns]
-    if not columns:
-        columns = sorted(available_columns)
-    return columns
-
-def _make_dedupe_key(entry, key_columns):
-    key_values = []
-    for col in key_columns:
-        val = entry.get(col)
-        if col == FLT_DATE_COLUMN:
-            key_values.append(_normalize_date(val))
-        elif col in (AIR_TIME_COLUMN, BLOCK_TIME_COLUMN):
-            key_values.append(_normalize_float(val))
-        elif col == TAKEOFF_TIME_COLUMN:
-            key_values.append(_normalize_takeoff_time(val))
-        else:
-            key_values.append(_normalize_text(val))
-    return tuple(key_values)
-
-def _dedupe_entries(db_rows, incoming_rows, key_columns):
-    db_keys = set(_make_dedupe_key(row, key_columns) for row in db_rows)
-    new_keys = set()
-    filtered = []
-    for entry in incoming_rows:
-        key = _make_dedupe_key(entry, key_columns)
-        if key in db_keys or key in new_keys:
-            continue
-        new_keys.add(key)
-        filtered.append(entry)
-    return filtered
-
 @anvil.server.callable
 def flight_records():
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
@@ -426,8 +385,8 @@ def process_csv_data(csv_bytes, source='api'):
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-      logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
-      raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
+        logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
+        raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
     for entry in data_list:
@@ -505,10 +464,14 @@ def process_csv_data(csv_bytes, source='api'):
     db_2 = data_list
     logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
     available_columns = set()
+    # we have to check if it's in db_1 first
     for entry in db_2:
-        available_columns.update(entry.keys())
-    key_columns = _select_dedupe_columns(available_columns)
-    db_2 = _dedupe_entries(db_1, db_2, key_columns)
+        entry['duplicate'] = de_deuplicate(entry,db_1)
+    print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
+        o=len([e for e in db_2 if not e['duplicate']]), \
+            d=len(e for e in db_2 if e['duplicate'])))
+
+    
     logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
         s=len(db_2),
         t=time.time(),
@@ -533,3 +496,9 @@ def process_csv_data(csv_bytes, source='api'):
     error_msg = f"Error processing CSV data: {str(e)}"
     print(error_msg)
     raise Exception(error_msg)
+  
+def de_deuplicate(entry,orig):
+    key_columns = [FLT_DATE_COLUMN, TAKEOFF_TIME_COLUMN, REGO_COLUMN]
+    return len([f for f in orig if f[FLT_DATE_COLUMN]] == entry[FLT_DATE_COLUMN] and \
+               _normalize_takeoff_time(f[TAKEOFF_TIME_COLUMN]) == _normalize_takeoff_time(entry[TAKEOFF_TIME_COLUMN]) and \
+                _normalize_text(f[REGO_COLUMN]) == _normalize_text(entry[REGO_COLUMN]) ) > 0
