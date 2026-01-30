@@ -5,11 +5,13 @@ from anvil.tables import app_tables
 from datetime import datetime, timezone, timedelta
 
 # Define constants for column names
+TAKEOFF_TIME_COLUMN = 'Takeoff Time'
 FLT_DATE_COLUMN = 'FltDate'
-BLOCK_TIME_COLUMN = 'Block Time'
-AIR_TIME_COLUMN = 'Air Time'
+AIR_TIME_COLUMN = 'CFL_Air_Time'
+BLOCK_TIME_COLUMN = 'CFL_Block_Time'
 REGO_COLUMN = 'Rego'
 AC_TYPE_COLUMN = 'ACType'
+AD_HOC_CLIENT_NAME_COLUMN = 'CFF_Ad_Hoc_Client_Name'
 CLIENT_COLUMN = 'CFF_Client'
 BASE_OF_OPERATION_COLUMN = 'CFF_Base_of_Operation'
 
