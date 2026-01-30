@@ -478,7 +478,7 @@ def process_csv_data(csv_bytes, source='api'):
         c=key_columns
     )
     
-    app_tables.flights.add_rows(db_2)
+    # app_tables.flights.add_rows(db_2)
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
