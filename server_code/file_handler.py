@@ -110,6 +110,7 @@ def save_file(data_list,source,file=None):
         app_tables.flights.add_rows(data_list)
         logger += "\nNB - first time run was used!!!"
         db_2 = data_list
+        logger += "\n{n} rows added".format(n=len(db_2))
     else:
         # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
         db_2 = data_list
@@ -132,7 +133,7 @@ def save_file(data_list,source,file=None):
     
         app_tables.flights.add_rows([d for d in db_2 if not d['duplicate']])
         logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
-                                                                         s=len(db_2))
+                                                                         s=len([d for d in db_2 if not d['duplicate']]))
     app_tables.logs.add_row(date=datetime.now(),
                            results=logger,
                            file=file,
