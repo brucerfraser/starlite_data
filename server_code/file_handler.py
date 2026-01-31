@@ -94,7 +94,7 @@ def flight_records():
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
     return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
-def save_file(data_list,source):
+def save_file(data_list,source,file):
     """
     Uploads processed list of dicts into flights table.
     Ignores duplicate entries
@@ -133,7 +133,7 @@ def save_file(data_list,source):
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
                            results=logger,
-                           file=None,
+                           file=file,
                            source=source)
     
     return {
@@ -264,7 +264,7 @@ def receive_file(file, rows_completed=0, source='upload'):
             entry[BLOCK_TIME_COLUMN] = _normalize_float(entry.get(BLOCK_TIME_COLUMN))
     
     # Add all rows to the flights table
-    return save_file(data_list,source=source)
+    return save_file(data_list,source=source,file=file)
     
     # return {
     #     'complete': True,
