@@ -31,6 +31,7 @@ class comp_controls(comp_controlsTemplate):
     self.load_rego()
     self.load_cff_base()
     self.load_cff_client()
+    print('controls loaded')
     for f in FLIGHTS:
       print(f)
 
