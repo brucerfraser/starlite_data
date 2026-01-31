@@ -34,11 +34,11 @@ class comp_controls(comp_controlsTemplate):
     self.load_cff_client()
     print('controls loaded')
     print(len(local_data.FLIGHTS))
-    for f in FLIGHTS:
+    for f in local_data.FLIGHTS:
       print(f)
 
   def load_years(self, year):
-    years = sorted({flight[FLT_DATE_COLUMN].year for flight in FLIGHTS if flight.get(FLT_DATE_COLUMN)})
+    years = sorted({flight[FLT_DATE_COLUMN].year for flight in local_data.FLIGHTS if flight.get(FLT_DATE_COLUMN)})
     self.total_years = len(years)
     self.msdd_years.items = ["All"] + [str(year) for year in years]
     self.msdd_years.selected = [str(year)]
@@ -56,25 +56,25 @@ class comp_controls(comp_controlsTemplate):
     self.package['months'] = mons
 
   def load_ac_type(self):
-    ac_types = sorted({flight[AC_TYPE_COLUMN] for flight in FLIGHTS if flight.get(AC_TYPE_COLUMN)})
+    ac_types = sorted({flight[AC_TYPE_COLUMN] for flight in local_data.FLIGHTS if flight.get(AC_TYPE_COLUMN)})
     self.msdd_ac_type.items = ["All"] + ac_types
     self.msdd_ac_type.selected = ac_types
     self.package['ac_type'] = ac_types
 
   def load_rego(self):
-    regos = sorted({flight[REGO_COLUMN] for flight in FLIGHTS if flight.get(REGO_COLUMN)})
+    regos = sorted({flight[REGO_COLUMN] for flight in local_data.FLIGHTS if flight.get(REGO_COLUMN)})
     self.msdd_rego.items = ["All"] + regos
     self.msdd_rego.selected = regos
     self.package['rego'] = regos
 
   def load_cff_base(self):
-    cff_bases = sorted({flight[BASE_OF_OPERATION_COLUMN] for flight in FLIGHTS if flight.get(BASE_OF_OPERATION_COLUMN)})
+    cff_bases = sorted({flight[BASE_OF_OPERATION_COLUMN] for flight in local_data.FLIGHTS if flight.get(BASE_OF_OPERATION_COLUMN)})
     self.msdd_cff_base.items = ["All"] + cff_bases
     self.msdd_cff_base.selected = cff_bases
     self.package['cff_base'] = cff_bases
 
   def load_cff_client(self):
-    cff_clients = sorted({flight[CLIENT_COLUMN] for flight in FLIGHTS if flight.get(CLIENT_COLUMN)})
+    cff_clients = sorted({flight[CLIENT_COLUMN] for flight in local_data.FLIGHTS if flight.get(CLIENT_COLUMN)})
     self.msdd_cff_client.items = ["All"] + cff_clients
     self.msdd_cff_client.selected = cff_clients
     self.package['cff_client'] = cff_clients

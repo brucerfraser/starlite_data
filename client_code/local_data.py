@@ -32,10 +32,6 @@ def load_up():
     """
     global FLIGHTS
     FLIGHTS = anvil.server.call('flight_records')
-    print('checking module:')
-    for f in FLIGHTS:
-        print(f)
-    print('end check module')
     
     # Call api_handler to get latest log date
     # result = anvil.server.call('api_handler')
