@@ -106,27 +106,29 @@ def save_file(data_list):
     
     db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
     logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
-    
-    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
-    db_2 = data_list
-    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    
-    # we have to check if it's in db_1 first
-    for entry in db_2:
-        entry['duplicate'] = de_deuplicate(entry,db_1)
-    print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
-        o=len([e for e in db_2 if not e['duplicate']]), \
-            d=len(e for e in db_2 if e['duplicate'])))
+    if db_1 is None or len(db_1) == 0:
+        app_tables.flights.add_rows(data_list[0:5])
+    else:
+        # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
+        db_2 = data_list
+        logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
+        
+        # we have to check if it's in db_1 first
+        for entry in db_2:
+            entry['duplicate'] = de_deuplicate(entry,db_1)
+        print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
+            o=len([e for e in db_2 if not e['duplicate']]), \
+                d=len(e for e in db_2 if e['duplicate'])))
 
+        
+        logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
+            s=len(db_2),
+            t=time.time(),
+            c=key_columns
+        )
     
-    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
-        s=len(db_2),
-        t=time.time(),
-        c=key_columns
-    )
-    
-    app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
-    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
+        app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
+        logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
                            results=logger,
