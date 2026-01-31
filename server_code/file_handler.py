@@ -556,25 +556,5 @@ def de_deuplicate(entry,orig):
         print(entry)
         return False
 
-def standard_takeoff(takeoff_str):
-    """
-    Converts various takeoff time formats to standard HHMM string.
-    
-    Args:
-        takeoff_str: Takeoff time as string (e.g., '9:30', '0930', '930', '09:3', etc.)
-        
-    Returns:
-        str: Standardized takeoff time in HHMM format, or None if invalid.
-    """
-    if takeoff_str is None:
-        return None
-    elif takeoff_str == '':
-        return None
-    elif ":" in takeoff_str:
-        takeoff_str = takeoff_str.replace(":", "")
-    
-    if len(takeoff_str) <= 4:
-        return takeoff_str.zfill(4)
-    else:
-        return None
+
     
