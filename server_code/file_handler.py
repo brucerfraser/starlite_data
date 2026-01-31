@@ -33,24 +33,27 @@ def _normalize_text(value):
         return None
     return text.casefold()
 
-def _normalize_takeoff_time(value):
-    if value is None:
+def standard_takeoff(takeoff_str):
+    """
+    Converts various takeoff time formats to standard HHMM string.
+    
+    Args:
+        takeoff_str: Takeoff time as string (e.g., '9:30', '0930', '930', '09:3', etc.)
+        
+    Returns:
+        str: Standardized takeoff time in HHMM format, or None if invalid.
+    """
+    if takeoff_str is None:
         return None
-    if isinstance(value, float) and pd.isna(value):
+    elif takeoff_str == '':
         return None
-    text = str(value).strip()
-    if text.lower() in ['', 'nan', 'none']:
+    elif ":" in takeoff_str:
+        takeoff_str = takeoff_str.replace(":", "")
+    
+    if len(takeoff_str) <= 4:
+        return takeoff_str.zfill(4)
+    else:
         return None
-    if ':' in text:
-        parts = text.split(':')
-        if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
-            text = f"{int(parts[0]):02d}{int(parts[1]):02d}"
-    text = ''.join(ch for ch in text if ch.isdigit())
-    if text == '':
-        return None
-    if len(text) <= 4:
-        return text.zfill(4)
-    return text
 
 def _normalize_date(value):
     if value is None:
@@ -254,7 +257,7 @@ def receive_file(file, rows_completed=0, source='upload'):
     for entry in data_list:
         # Normalize Takeoff Time
         if TAKEOFF_TIME_COLUMN in entry:
-            entry[TAKEOFF_TIME_COLUMN] = _normalize_takeoff_time(entry.get(TAKEOFF_TIME_COLUMN))
+            entry[TAKEOFF_TIME_COLUMN] = standard_takeoff(entry.get(TAKEOFF_TIME_COLUMN))
         
         # Normalize FltDate
         if FLT_DATE_COLUMN in entry:
