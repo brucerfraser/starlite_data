@@ -94,25 +94,55 @@ def flight_records():
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
     return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
-@anvil.server.callable
-def receive_file(file, source='upload'):
+def save_file(data_list):
     """
-    Processes Excel (.xls, .xlsx) or CSV files and sends entries to process function.
+    Uploads processed list of dicts into flights table.
+    Ignores duplicate entries
+    """
+    # starts a logger text
+    logger = ''
+    logger += "\nStart compare: {t}".format(t=time.time())
+    col_names = [c['name'] for c in app_tables.flights.list_columns()]
     
-    Args:
-        file: Anvil Media object containing the uploaded file
-        rows_completed: Number of rows already processed (for continuation)
-        
-    Returns:
-        dict: {'complete': bool, 'total_rows': int, 'rows_processed': int}
-    """
-    # Get file content as bytes
-    file_bytes = file.get_bytes()
-    return process_csv_data(file_bytes, source=source)
+    db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
+    logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
+    
+    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
+    db_2 = data_list
+    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
+    
+    # we have to check if it's in db_1 first
+    for entry in db_2:
+        entry['duplicate'] = de_deuplicate(entry,db_1)
+    print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
+        o=len([e for e in db_2 if not e['duplicate']]), \
+            d=len(e for e in db_2 if e['duplicate'])))
+
+    
+    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
+        s=len(db_2),
+        t=time.time(),
+        c=key_columns
+    )
+    
+    app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
+    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
+                                                                         s=len(db_2))
+    app_tables.logs.add_row(date=datetime.now(),
+                           results=logger,
+                           file=None,
+                           source=source)
+    print(logger)
+    return {
+        'complete': True,
+        'total_rows': len(data_list),
+        'rows_processed': len([d for d in db_2 if not d.get('duplicate', False)]),
+        'logger': logger
+    }
 
 
 @anvil.server.callable
-def receive_file_old(file, rows_completed=0, source='upload'):
+def receive_file(file, rows_completed=0, source='upload'):
     """
     Processes Excel (.xls, .xlsx) or CSV files and loads entries into flights table.
     Handles missing headers by creating default column names.
@@ -207,13 +237,11 @@ def receive_file_old(file, rows_completed=0, source='upload'):
 
     # Convert all columns to strings to ensure consistency
     df = df.astype(str)
-# Start logger text
-    logger = ''
+    
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-        logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
         raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
@@ -233,13 +261,13 @@ def receive_file_old(file, rows_completed=0, source='upload'):
             entry[BLOCK_TIME_COLUMN] = _normalize_float(entry.get(BLOCK_TIME_COLUMN))
     
     # Add all rows to the flights table
-    app_tables.flights.add_rows(data_list)
+    return save_file(data_list)
     
-    return {
-        'complete': True,
-        'total_rows': len(data_list),
-        'rows_processed': len(data_list)
-    }
+    # return {
+    #     'complete': True,
+    #     'total_rows': len(data_list),
+    #     'rows_processed': len(data_list)
+    # }
 
 @anvil.email.handle_message
 def handle_incoming_emails(msg):
@@ -396,13 +424,11 @@ def process_csv_data(csv_bytes, source='api'):
     # Convert all columns to strings to ensure consistency
     df = df.astype(str)
     
-    logger = ''
     
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
     except Exception as e:
-        logger += "\n" + f"Error converting DataFrame to list of dictionaries: {str(e)}"
         raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
     
     # Process each entry to ensure proper data types and remove NaN values
@@ -470,44 +496,8 @@ def process_csv_data(csv_bytes, source='api'):
                 if value is not None:
                     entry[key] = str(value)
     
-    # Load the entire flights table into a list of dictionaries
-    logger += "\nStart compare: {t}".format(t=time.time())
-    col_names = [c['name'] for c in app_tables.flights.list_columns()]
-    
-    db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
-    logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
-    
-    # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
-    db_2 = data_list
-    logger += "\nFile size pre-strip: {s}".format(s=len(db_2))
-    
-    # we have to check if it's in db_1 first
-    for entry in db_2:
-        entry['duplicate'] = de_deuplicate(entry,db_1)
-    print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
-        o=len([e for e in db_2 if not e['duplicate']]), \
-            d=len(e for e in db_2 if e['duplicate'])))
-
-    
-    logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
-        s=len(db_2),
-        t=time.time(),
-        c=key_columns
-    )
-    
-    app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
-    logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
-                                                                         s=len(db_2))
-    app_tables.logs.add_row(date=datetime.now(),
-                           results=logger,
-                           file=None,
-                           source=source)
-    print(logger)
-    return {
-        'complete': True,
-        'total_rows': len(data_list),
-        'rows_processed': len([d for d in db_2 if not d.get('duplicate', False)])
-    }
+    # Load the new flights to the table
+    return save_file(data_list)
     
   except Exception as e:
     error_msg = f"Error processing CSV data: {str(e)}"
