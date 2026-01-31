@@ -489,6 +489,10 @@ def process_csv_data(csv_bytes, source='api'):
             except Exception:
                 # If conversion fails, set to None
                 entry[FLT_DATE_COLUMN] = None
+
+        # Standardize Takeoff Time
+        if TAKEOFF_TIME_COLUMN in entry:
+            entry[TAKEOFF_TIME_COLUMN] = standard_takeoff(entry.get(TAKEOFF_TIME_COLUMN))
         
         # Convert Air Time to float or 0.0 if None/NaN
         if AIR_TIME_COLUMN in entry:
