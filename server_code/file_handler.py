@@ -526,10 +526,17 @@ def de_deuplicate(entry,orig):
         if orig is None or len(orig) == 0:
             return False
         else:
+            if entry[FLT_DATE_COLUMN].year == 2026:
+                print("2026 Entry found:")
+                print(entry)
+                print("Same dates found in original: {l}".format(l=len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN]])))
+                for e in [f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN]]:
+                    print(e)
             return len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN] and \
                 standard_takeoff(f[TAKEOFF_TIME_COLUMN]) == standard_takeoff(entry[TAKEOFF_TIME_COLUMN]) and \
                     f[REGO_COLUMN] == entry[REGO_COLUMN]] ) > 0
         
+
     except Exception as e:
         print("Error in de_deuplicate: {e}".format(e=str(e)))
         print(entry)
