@@ -24,6 +24,10 @@ class comp_controls(comp_controlsTemplate):
       year = str(year)
     else:
       year = str(datetime.now().year)  # Default to the current year
+    
+    # we need to test which flights is in use? Hectic
+    print(len(FLIGHTS), "straight FLIGHTS")
+    print(len(local_data.FLIGHTS), "local_data.FLIGHTS")
 
     # Load dropdowns
     self.load_years(year)

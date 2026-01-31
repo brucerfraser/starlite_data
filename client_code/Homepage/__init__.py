@@ -34,26 +34,7 @@ class Homepage(HomepageTemplate):
         alert(msg)
         if result['rows_processed'] > 0:
           self.reload_flights()
-      # rows_completed = 0
-      # complete = False
-      # total_rows = 0
       
-      # # Loop until all rows are processed
-      # while not complete:
-      #   result = anvil.server.call('receive_file', file)
-      #   complete = result['complete']
-      #   total_rows = result['total_rows']
-      #   rows_completed = result['rows_processed']
-        
-      #   if complete:
-      #     msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
-      #                                                                     s=rows_completed)
-      #     self.update_data_label(result)
-      #     alert(msg)
-      #     if rows_completed > 0:
-      #       self.reload_flights()
-      #   else:
-      #     print(f"Rows completed: {rows_completed}")
 
   @handle("btn_records", "click")
   def btn_records_click(self, **event_args):
