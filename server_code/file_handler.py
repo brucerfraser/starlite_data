@@ -108,6 +108,7 @@ def save_file(data_list,source,file=None):
     logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
     if db_1 is None or len(db_1) == 0:
         app_tables.flights.add_rows(data_list)
+        logger += "\nNB - first time run was used!!!"
         db_2 = data_list
     else:
         # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
@@ -117,9 +118,11 @@ def save_file(data_list,source,file=None):
         # we have to check if it's in db_1 first
         for entry in db_2:
             entry['duplicate'] = de_deuplicate(entry,db_1)
-        print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
+        a_log = "De-dupe complete\n{o} first time entries,\n{d} old entries".format( \
             o=len([e for e in db_2 if not e['duplicate']]), \
-                d=len([e for e in db_2 if e['duplicate']])))
+                d=len([e for e in db_2 if e['duplicate']]))
+        logger += '\n' + a_log
+        print(a_log)
 
         
         logger += "\nFile after strip: {s}, Time after strip: {t}".format(
