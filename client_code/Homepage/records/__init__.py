@@ -35,6 +35,7 @@ class records(recordsTemplate):
   def load_controls(self,**event_args):
     from ..comp_controls import comp_controls
     self.controller = comp_controls()
+    self.cp_controls.clear()
     self.cp_controls.add_component(self.controller)
 
   def act(self,package,**event_args):
