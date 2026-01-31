@@ -41,16 +41,16 @@ class summary_form(summary_formTemplate):
 
     # Group flights based on the selected summary type
     if summary_type == "rego":
-        group_key = "Rego"
+        group_key = REGO_COLUMN
         title = "Summary by Registration"
     elif summary_type == "type":
-        group_key = "ACType"
+        group_key = AC_TYPE_COLUMN
         title = "Summary by Aircraft Type"
     elif summary_type == "client":
-        group_key = "CFF_Client"
+        group_key = CLIENT_COLUMN
         title = "Summary by Client"
     elif summary_type == "base":
-        group_key = "CFF_Base_of_Operation"
+        group_key = BASE_OF_OPERATION_COLUMN
         title = "Summary by Base"
     else:
         group_key = None
@@ -62,12 +62,12 @@ class summary_form(summary_formTemplate):
         key = flight.get(group_key, "Unknown")
         if key not in grouped_data:
             grouped_data[key] = {"air_time": 0, "block_time": 0}
-        grouped_data[key]["air_time"] += flight.get("Air Time", 0) or 0
-        grouped_data[key]["block_time"] += flight.get("Block Time", 0) or 0
+        grouped_data[key]["air_time"] += flight.get(AIR_TIME_COLUMN, 0) or 0
+        grouped_data[key]["block_time"] += flight.get(BLOCK_TIME_COLUMN, 0) or 0
 
     # Generate the summary text
-    min_date = min(flight["FltDate"] for flight in self.flights)
-    max_date = max(flight["FltDate"] for flight in self.flights)
+    min_date = min(flight[FLT_DATE_COLUMN] for flight in self.flights)
+    max_date = max(flight[FLT_DATE_COLUMN] for flight in self.flights)
     summary_title = f"<h2><b>{title}</b></h2>"
     summary_period = f"<p><i>For the period {min_date.strftime('%d %b %Y')} to {max_date.strftime('%d %b %Y')}</i></p>"
     summary_items = ""
