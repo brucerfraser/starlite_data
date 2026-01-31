@@ -332,25 +332,25 @@ def api_handler(dates=None):
   url = f"{base_url}?Param765={param765}&Param768={param768}&format=CSV&AsAttachment=False"
   
   # Make the API request with authorization header
-  try:
-    response = anvil.http.request(
-      url,
-      method='GET',
-      headers={'Authorization': api_key}
-    )
+#   try:
+  response = anvil.http.request(
+    url,
+    method='GET',
+    headers={'Authorization': api_key}
+  )
+
+  # Get bytes from the response
+  if hasattr(response, 'get_bytes'):
+    csv_bytes = response.get_bytes()
+  else:
+    csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
+
+  # Process the CSV data directly
+  result = process_csv_data(csv_bytes, source='api')
     
-    # Get bytes from the response
-    if hasattr(response, 'get_bytes'):
-      csv_bytes = response.get_bytes()
-    else:
-      csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
-    
-    # Process the CSV data directly
-    result = process_csv_data(csv_bytes, source='api')
-    
-  except Exception as e:
-    error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
-    print(error_msg)
+  #   except Exception as e:
+  # error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
+  # print(error_msg)
   
   # Always check for latest log date regardless of API call success
   try:
