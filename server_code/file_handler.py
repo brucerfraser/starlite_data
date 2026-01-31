@@ -299,7 +299,7 @@ def handle_incoming_emails(msg):
   
 
 @anvil.server.callable
-def api_handler(false_call=False,dates=None):
+def api_handler(api_call=True,dates=None):
   """
   Fetches flight data from AirMaestro API and loads it into the flights table.
   
@@ -311,7 +311,7 @@ def api_handler(false_call=False,dates=None):
     dict: {'complete': True/False, 'total_rows': int, 'rows_processed': int, 'latest_log_date': datetime}
   """
   result = {}
-  if not false_call:
+  if api_call:
     # API credentials and base URL
     api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
     base_url = 'https://starlite.airmaestro.net/api/reports/333'

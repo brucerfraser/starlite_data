@@ -79,6 +79,6 @@ class Homepage(HomepageTemplate):
       self.lbl_data_version.text = f"Data version:\nFlight records: {date_str}"
 
   def reload_flights(self,**event_args):
-    result = local_data.load_up()
+    result = local_data.load_up(api_call=False)
     self.update_data_label(result)
     self.btn_records_click()
