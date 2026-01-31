@@ -1,0 +1,19 @@
+components:
+- layout_properties: {grid_position: 'WKTDQD,BWMLBX'}
+  name: label_1
+  properties: {text: Please enter your suggestion text below Grobbies (or Sarah)}
+  type: Label
+- layout_properties: {grid_position: 'QTKPRK,WWGFXF'}
+  name: txt_suggest
+  properties: {}
+  type: TextArea
+- layout_properties: {grid_position: 'ZKZHTP,ILWMUH'}
+  name: fu_image
+  properties: {}
+  type: FileLoader
+- layout_properties: {grid_position: 'LPONKV,KMJRSY'}
+  name: img_picture
+  properties: {}
+  type: Image
+container: {type: ColumnPanel}
+is_package: true

@@ -36,6 +36,10 @@ components:
     name: lbl_data_version
     properties: {role: null}
     type: Label
+  - layout_properties: {grid_position: 'FLTMUD,RXIXHV'}
+    name: btn_suggest
+    properties: {role: outlined-button, text: Suggest}
+    type: Button
   layout_properties: {slot: left-nav}
   name: column_panel_1
   properties: {}
