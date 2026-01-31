@@ -122,10 +122,9 @@ def save_file(data_list,source,file):
                 d=len([e for e in db_2 if e['duplicate']])))
 
         
-        logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
+        logger += "\nFile after strip: {s}, Time after strip: {t}".format(
             s=len(db_2),
             t=time.time(),
-            c=key_columns
         )
     
         app_tables.flights.add_rows([d for d in db_2 if not d['duplicate']])
