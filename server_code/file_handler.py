@@ -365,28 +365,28 @@ def api_handler(dates=None):
 
 
 def process_csv_data(csv_bytes, source='api'):
-  """
-  Internal function to process CSV data from bytes and load into flights table.
-  
-  Args:
-    csv_bytes: CSV data as bytes
-    source: Source of the data (e.g., 'api', 'upload', 'email')
+    """
+    Internal function to process CSV data from bytes and load into flights table.
     
-  Returns:
-    dict: {'complete': True, 'total_rows': int, 'rows_processed': int}
-  """
-  start_time = time.time()
+    Args:
+        csv_bytes: CSV data as bytes
+        source: Source of the data (e.g., 'api', 'upload', 'email')
+        
+    Returns:
+        dict: {'complete': True, 'total_rows': int, 'rows_processed': int}
+    """
+    start_time = time.time()
   
-  try:
+#   try:
     # Read CSV with different encodings
     try:
-      df = pd.read_csv(io.BytesIO(csv_bytes), encoding='utf-8')
+        df = pd.read_csv(io.BytesIO(csv_bytes), encoding='utf-8')
     except UnicodeDecodeError:
-      try:
-        df = pd.read_csv(io.BytesIO(csv_bytes), encoding='latin-1')
-      except Exception:
-        df = pd.read_csv(io.BytesIO(csv_bytes), encoding='iso-8859-1')
-    
+        try:
+            df = pd.read_csv(io.BytesIO(csv_bytes), encoding='latin-1')
+        except Exception:
+            df = pd.read_csv(io.BytesIO(csv_bytes), encoding='iso-8859-1')
+
     # Check if the first row looks like data instead of headers
     if df is not None and len(df) > 0:
         # If all column names are generic (Unnamed) or numeric, assume no headers
@@ -413,27 +413,27 @@ def process_csv_data(csv_bytes, source='api'):
                 else:
                     new_columns.append(str(col).strip())
             df.columns = new_columns
-    
+
     # Handle empty dataframe
     if df is None or df.empty:
         return {'complete': True, 'total_rows': 0, 'rows_processed': 0}
-    
+
     # Replace NaN values with None for better JSON serialization
     df = df.where(pd.notnull(df), None)
-    
+
     # Ensure all column names are strings
     df.columns = [str(col) for col in df.columns]
-    
+
     # Convert all columns to strings to ensure consistency
     df = df.astype(str)
-    
-    
+
+
     # Convert to list of dictionaries
     try:
         data_list = df.to_dict('records')
     except Exception as e:
         raise Exception(f"Error converting DataFrame to list of dictionaries: {str(e)}")
-    
+
     # Process each entry to ensure proper data types and remove NaN values
     for entry in data_list:
         # First pass: Check for and replace any remaining NaN values
@@ -498,14 +498,14 @@ def process_csv_data(csv_bytes, source='api'):
             if key not in [FLT_DATE_COLUMN, AIR_TIME_COLUMN, BLOCK_TIME_COLUMN, TAKEOFF_TIME_COLUMN]:
                 if value is not None:
                     entry[key] = str(value)
-    
+
     # Load the new flights to the table
     return save_file(data_list,source=source)
-    
-  except Exception as e:
-    error_msg = f"Error processing CSV data: {str(e)}"
-    print(error_msg)
-    raise Exception(error_msg)
+        
+    #   except Exception as e:
+    #     error_msg = f"Error processing CSV data: {str(e)}"
+    #     print(error_msg)
+    #     raise Exception(error_msg)
   
 def de_deuplicate(entry,orig):
     key_columns = [FLT_DATE_COLUMN, TAKEOFF_TIME_COLUMN, REGO_COLUMN]
