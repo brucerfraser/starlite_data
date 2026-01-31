@@ -94,7 +94,7 @@ def flight_records():
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
     return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
-def save_file(data_list,source,file):
+def save_file(data_list,source,file=None):
     """
     Uploads processed list of dicts into flights table.
     Ignores duplicate entries
