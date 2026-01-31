@@ -92,9 +92,6 @@ def _normalize_float(value, default=0.0):
 @anvil.server.callable
 def flight_records():
     col_names = [c['name'] for c in app_tables.flights.list_columns()]
-    print('flight_records:',col_names)
-    for f in [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]:
-        print(f)
     return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
 def save_file(data_list,source):

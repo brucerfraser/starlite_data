@@ -99,6 +99,5 @@ class Homepage(HomepageTemplate):
 
   def reload_flights(self,**event_args):
     result = local_data.load_up()
-    print(result)
     self.update_data_label(result)
     self.btn_records_click()

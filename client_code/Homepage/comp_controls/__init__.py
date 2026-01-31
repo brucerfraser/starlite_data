@@ -32,10 +32,7 @@ class comp_controls(comp_controlsTemplate):
     self.load_rego()
     self.load_cff_base()
     self.load_cff_client()
-    print('controls loaded')
-    print(len(local_data.FLIGHTS))
-    for f in local_data.FLIGHTS:
-      print(f)
+    
 
   def load_years(self, year):
     years = sorted({flight[FLT_DATE_COLUMN].year for flight in local_data.FLIGHTS if flight.get(FLT_DATE_COLUMN)})

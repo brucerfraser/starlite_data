@@ -20,7 +20,6 @@ class records(recordsTemplate):
   @handle("", "show")
   def form_show(self, **event_args):
     # Get the current year
-    print('happening')
     self.load_controls()
     self.act(package=self.controller.package)
     # current_year = datetime.now().year
