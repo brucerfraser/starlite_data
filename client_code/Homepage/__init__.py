@@ -17,7 +17,7 @@ class Homepage(HomepageTemplate):
     # print(result)
     # Format and display data version
     self.update_data_label(result)
-    
+    self.content_panel.set_event_handler('x-close-suggest',self.btn_records_click)
     self.btn_records_click()
     
 
@@ -64,6 +64,12 @@ class Homepage(HomepageTemplate):
         self.reload_flights()
     else:
       alert("API call unsuccessful")
+
+  @handle('btn_suggest','click')
+  def suggest(self,**event_args):
+    self.content_panel.clear()
+    from .suggestion import suggestion
+    self.content_panel.add_component(suggestion())
 
   def update_data_label(self,result=None,**event_args):
     if result and result.get('latest_log_date'):
