@@ -299,7 +299,7 @@ def handle_incoming_emails(msg):
   
 
 @anvil.server.callable
-def api_handler(dates=None):
+def api_handler(false_call=False,dates=None):
   """
   Fetches flight data from AirMaestro API and loads it into the flights table.
   
@@ -310,67 +310,69 @@ def api_handler(dates=None):
   Returns:
     dict: {'complete': True/False, 'total_rows': int, 'rows_processed': int, 'latest_log_date': datetime}
   """
-  # API credentials and base URL
-  api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
-  base_url = 'https://starlite.airmaestro.net/api/reports/333'
-  
-  result = {'complete': False, 'total_rows': 0, 'rows_processed': 0, 'latest_log_date': None}
-  
-  # Handle date parameters
-  if dates is None:
-    # Default to previous 10 days
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=10)
-  else:
-    # Parse provided dates
-    if isinstance(dates, (tuple, list)) and len(dates) == 2:
-      start_date = dates[0]
-      end_date = dates[1]
-      
-      # Convert strings to date objects if needed
-      if isinstance(start_date, str):
-        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-      if isinstance(end_date, str):
-        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+  result = {}
+  if not false_call:
+    # API credentials and base URL
+    api_key = 'n93_J*(17NoW1Hojh!5w6,*7v8*Y*.6ruJ9*Y*09L1HLUa*b-78o-55($EsvN96M'
+    base_url = 'https://starlite.airmaestro.net/api/reports/333'
+    
+    result = {'complete': False, 'total_rows': 0, 'rows_processed': 0, 'latest_log_date': None}
+    
+    # Handle date parameters
+    if dates is None:
+        # Default to previous 10 days
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=10)
     else:
-      raise ValueError("dates must be a tuple/list of (start_date, end_date)")
-  
-  # Format dates as yyyy-mm-dd
-  param765 = start_date.strftime('%Y-%m-%d')  # FltDate after or on
-  param768 = end_date.strftime('%Y-%m-%d')    # FltDate before or on
-  
-  # Build the URL with parameters
-  url = f"{base_url}?Param765={param765}&Param768={param768}&format=CSV&AsAttachment=False"
-  
-  # Make the API request with authorization header
-  csv_bytes = None
-  try:
-    response = anvil.http.request(
-        url,
-        method='GET',
-        headers={'Authorization': api_key}
-    )
+        # Parse provided dates
+        if isinstance(dates, (tuple, list)) and len(dates) == 2:
+            start_date = dates[0]
+            end_date = dates[1]
+        
+        # Convert strings to date objects if needed
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        else:
+            raise ValueError("dates must be a tuple/list of (start_date, end_date)")
+    
+    # Format dates as yyyy-mm-dd
+    param765 = start_date.strftime('%Y-%m-%d')  # FltDate after or on
+    param768 = end_date.strftime('%Y-%m-%d')    # FltDate before or on
+    
+    # Build the URL with parameters
+    url = f"{base_url}?Param765={param765}&Param768={param768}&format=CSV&AsAttachment=False"
+    
+    # Make the API request with authorization header
+    csv_bytes = None
+    try:
+        response = anvil.http.request(
+            url,
+            method='GET',
+            headers={'Authorization': api_key}
+        )
 
-    # Get bytes from the response
-    if hasattr(response, 'get_bytes'):
-        csv_bytes = response.get_bytes()
+        # Get bytes from the response
+        if hasattr(response, 'get_bytes'):
+            csv_bytes = response.get_bytes()
+        else:
+            csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
+
+    except Exception as e:
+        error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
+        print(error_msg)
+    
+    # Process the CSV data directly
+    if csv_bytes:
+        result = process_csv_data(csv_bytes, source='api')
     else:
-        csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
-
-  except Exception as e:
-    error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
-    print(error_msg)
-  
-  # Process the CSV data directly
-  if csv_bytes:
-    result = process_csv_data(csv_bytes, source='api')
-  else:
-    result = {
-        'complete': False,
-        'logger': 'No data retrieved from API.',
-        'total_rows': 0,
-        'rows_processed': 0
-    }
+        result = {
+            'complete': False,
+            'logger': 'No data retrieved from API.',
+            'total_rows': 0,
+            'rows_processed': 0
+        }
     
   
   

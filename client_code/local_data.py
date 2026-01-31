@@ -24,7 +24,7 @@ MONTH_NAMES = [
     "July", "August", "September", "October", "November", "December"
 ]
 
-def load_up():
+def load_up(api_call=True):
     """Load flight data and get latest data version info.
     
     Returns:
@@ -34,7 +34,9 @@ def load_up():
     FLIGHTS = anvil.server.call('flight_records')
     
     # Call api_handler to get latest log date
-    result = anvil.server.call('api_handler')
+    
+    result = anvil.server.call('api_handler',false_call=True)
+   
 
     # Adjust the latest_log_date to local time
     if 'latest_log_date' in result:
