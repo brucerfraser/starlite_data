@@ -31,6 +31,8 @@ class comp_controls(comp_controlsTemplate):
     self.load_rego()
     self.load_cff_base()
     self.load_cff_client()
+    for f in FLIGHTS:
+      print(f)
 
   def load_years(self, year):
     years = sorted({flight['FltDate'].year for flight in FLIGHTS if flight.get('FltDate')})
