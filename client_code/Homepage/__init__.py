@@ -26,26 +26,34 @@ class Homepage(HomepageTemplate):
     """This method is called when a file is loaded into the FileLoader"""
     if file is not None:
       self.file_loader_1.clear()
-      rows_completed = 0
-      complete = False
-      total_rows = 0
+      result = anvil.server.call('receive_file', file, source='upload')
+      if result['complete']:
+        msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=result['total_rows'],
+                                                                        s=result['rows_processed'])
+        self.update_data_label(result)
+        alert(msg)
+        if result['rows_processed'] > 0:
+          self.reload_flights()
+      # rows_completed = 0
+      # complete = False
+      # total_rows = 0
       
-      # Loop until all rows are processed
-      while not complete:
-        result = anvil.server.call('receive_file', file, rows_completed)
-        complete = result['complete']
-        total_rows = result['total_rows']
-        rows_completed = result['rows_processed']
+      # # Loop until all rows are processed
+      # while not complete:
+      #   result = anvil.server.call('receive_file', file)
+      #   complete = result['complete']
+      #   total_rows = result['total_rows']
+      #   rows_completed = result['rows_processed']
         
-        if complete:
-          msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
-                                                                          s=rows_completed)
-          self.update_data_label(result)
-          alert(msg)
-          if rows_completed > 0:
-            self.reload_flights()
-        else:
-          print(f"Rows completed: {rows_completed}")
+      #   if complete:
+      #     msg = "File uploaded, \n{t} Total rows, \n{s} Rows saved".format(t=total_rows,
+      #                                                                     s=rows_completed)
+      #     self.update_data_label(result)
+      #     alert(msg)
+      #     if rows_completed > 0:
+      #       self.reload_flights()
+      #   else:
+      #     print(f"Rows completed: {rows_completed}")
 
   @handle("btn_records", "click")
   def btn_records_click(self, **event_args):

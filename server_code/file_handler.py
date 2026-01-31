@@ -95,8 +95,20 @@ def flight_records():
     return [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
 
 @anvil.server.callable
-def receive_file(file, rows_completed=0, source='upload'):
-    pass
+def receive_file(file, source='upload'):
+    """
+    Processes Excel (.xls, .xlsx) or CSV files and sends entries to process function.
+    
+    Args:
+        file: Anvil Media object containing the uploaded file
+        rows_completed: Number of rows already processed (for continuation)
+        
+    Returns:
+        dict: {'complete': bool, 'total_rows': int, 'rows_processed': int}
+    """
+    # Get file content as bytes
+    file_bytes = file.get_bytes()
+    return process_csv_data(file_bytes, source=source)
 
 
 @anvil.server.callable
@@ -235,11 +247,11 @@ def handle_incoming_emails(msg):
   if len(msg.attachments) > 0:
     for a in msg.attachments:
       print(a.name)
-      receive_file(file=a,rows_completed=0,source='email')
+      receive_file(file=a,source='email')
   elif len(msg.inline_attachments) > 0:
     for k,a in msg.inline_attachments.items():
       print(a.name)
-      receive_file(file=a,rows_completed=0,source='email')
+      receive_file(file=a,source='email')
   else:
     print("No attachments found")
   
@@ -483,7 +495,7 @@ def process_csv_data(csv_bytes, source='api'):
         c=key_columns
     )
     
-    # app_tables.flights.add_rows(db_2)
+    app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
     logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
