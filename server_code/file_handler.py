@@ -506,6 +506,15 @@ def process_csv_data(csv_bytes, source='api'):
   
 def de_deuplicate(entry,orig):
     key_columns = [FLT_DATE_COLUMN, TAKEOFF_TIME_COLUMN, REGO_COLUMN]
-    return len([f for f in orig if f[FLT_DATE_COLUMN]] == entry[FLT_DATE_COLUMN] and \
-               _normalize_takeoff_time(f[TAKEOFF_TIME_COLUMN]) == _normalize_takeoff_time(entry[TAKEOFF_TIME_COLUMN]) and \
-                _normalize_text(f[REGO_COLUMN]) == _normalize_text(entry[REGO_COLUMN]) ) > 0
+    try:
+        if orig is None or len(orig) == 0:
+            return False
+        else:
+            return len([f for f in orig if f[FLT_DATE_COLUMN]] == entry[FLT_DATE_COLUMN] and \
+                _normalize_takeoff_time(f[TAKEOFF_TIME_COLUMN]) == _normalize_takeoff_time(entry[TAKEOFF_TIME_COLUMN]) and \
+                    _normalize_text(f[REGO_COLUMN]) == _normalize_text(entry[REGO_COLUMN]) ) > 0
+    except Exception as e:
+        print("Error in de_deuplicate: {e}".format(e=str(e)))
+        print(entry)
+        return False
+        
