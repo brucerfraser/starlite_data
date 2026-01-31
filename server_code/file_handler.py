@@ -107,7 +107,7 @@ def save_file(data_list,source):
     db_1 = [dict(row) for row in app_tables.flights.search(q.fetch_only(*col_names))]
     logger += "\nTable size: {s}, time table -> list: {t}".format(s=len(db_1),t=time.time())
     if db_1 is None or len(db_1) == 0:
-        app_tables.flights.add_rows(data_list[0:5])
+        app_tables.flights.add_rows(data_list)
         db_2 = data_list
     else:
         # Remove entries in db_2 that already exist in db_1, and de-duplicate within incoming data
