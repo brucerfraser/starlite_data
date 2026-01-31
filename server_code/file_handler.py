@@ -119,7 +119,7 @@ def save_file(data_list,source):
             entry['duplicate'] = de_deuplicate(entry,db_1)
         print("First dedupe complete\n{o} first time entries,\n{d} entries".format( \
             o=len([e for e in db_2 if not e['duplicate']]), \
-                d=len(e for e in db_2 if e['duplicate'])))
+                d=len([e for e in db_2 if e['duplicate']])))
 
         
         logger += "\nFile after strip: {s}, Time after strip: {t}, Dedupe columns: {c}".format(
