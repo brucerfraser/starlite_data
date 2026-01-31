@@ -6,6 +6,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...local_data import FLIGHTS,package_flights,FLT_DATE_COLUMN, BLOCK_TIME_COLUMN, AIR_TIME_COLUMN, REGO_COLUMN, AC_TYPE_COLUMN, CLIENT_COLUMN, BASE_OF_OPERATION_COLUMN
 from datetime import datetime
+from ... import local_data
 
 
 
@@ -32,6 +33,7 @@ class comp_controls(comp_controlsTemplate):
     self.load_cff_base()
     self.load_cff_client()
     print('controls loaded')
+    print(len(local_data.FLIGHTS))
     for f in FLIGHTS:
       print(f)
 
