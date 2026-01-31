@@ -128,14 +128,14 @@ def save_file(data_list,source):
             c=key_columns
         )
     
-        app_tables.flights.add_rows([d for d in db_2[0:5] if not d['duplicate']])
+        app_tables.flights.add_rows([d for d in db_2 if not d['duplicate']])
         logger += "\nCompleted, Rows uploaded: {u},\nRows saved: {s}".format(u=len(data_list),
                                                                          s=len(db_2))
     app_tables.logs.add_row(date=datetime.now(),
                            results=logger,
                            file=None,
                            source=source)
-    print(logger)
+    
     return {
         'complete': True,
         'total_rows': len(data_list),
