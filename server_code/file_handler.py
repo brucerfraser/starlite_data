@@ -530,8 +530,12 @@ def de_deuplicate(entry,orig):
                 print("2026 Entry found:")
                 print(entry)
                 print("Same dates found in original: {l}".format(l=len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN]])))
+                print("Same times found in original: {l}".format(l=len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN] and \
+                                                                        standard_takeoff(f[TAKEOFF_TIME_COLUMN]) == standard_takeoff(entry[TAKEOFF_TIME_COLUMN])])))
+                times = []
                 for e in [f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN]]:
-                    print(e)
+                    times.append(e[TAKEOFF_TIME_COLUMN])
+                print("Times on that date: {t}".format(t=times))
             return len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN] and \
                 standard_takeoff(f[TAKEOFF_TIME_COLUMN]) == standard_takeoff(entry[TAKEOFF_TIME_COLUMN]) and \
                     f[REGO_COLUMN] == entry[REGO_COLUMN]] ) > 0
