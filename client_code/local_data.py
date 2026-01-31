@@ -34,12 +34,8 @@ def load_up():
     FLIGHTS = anvil.server.call('flight_records')
     
     # Call api_handler to get latest log date
-    # result = anvil.server.call('api_handler')
-    result = {
-        'complete': True,
-        'total_rows': 0,
-        'rows_processed': 0
-    }
+    result = anvil.server.call('api_handler')
+
     # Adjust the latest_log_date to local time
     if 'latest_log_date' in result:
         utc_time = result['latest_log_date']

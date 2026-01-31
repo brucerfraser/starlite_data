@@ -331,25 +331,36 @@ def api_handler(dates=None):
   url = f"{base_url}?Param765={param765}&Param768={param768}&format=CSV&AsAttachment=False"
   
   # Make the API request with authorization header
-#   try:
-  response = anvil.http.request(
-    url,
-    method='GET',
-    headers={'Authorization': api_key}
-  )
+  csv_bytes = None
+  try:
+    response = anvil.http.request(
+        url,
+        method='GET',
+        headers={'Authorization': api_key}
+    )
 
-  # Get bytes from the response
-  if hasattr(response, 'get_bytes'):
-    csv_bytes = response.get_bytes()
-  else:
-    csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
+    # Get bytes from the response
+    if hasattr(response, 'get_bytes'):
+        csv_bytes = response.get_bytes()
+    else:
+        csv_bytes = response.encode('utf-8') if isinstance(response, str) else response
 
+  except Exception as e:
+    error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
+    print(error_msg)
+  
   # Process the CSV data directly
-  result = process_csv_data(csv_bytes, source='api')
+  if csv_bytes:
+    result = process_csv_data(csv_bytes, source='api')
+  else:
+    result = {
+        'complete': False,
+        'logger': 'No data retrieved from API.',
+        'total_rows': 0,
+        'rows_processed': 0
+    }
     
-  #   except Exception as e:
-  # error_msg = f"Error fetching data from AirMaestro API: {str(e)}"
-  # print(error_msg)
+  
   
   # Always check for latest log date regardless of API call success
   try:
@@ -364,19 +375,18 @@ def api_handler(dates=None):
 
 
 def process_csv_data(csv_bytes, source='api'):
-    """
-    Internal function to process CSV data from bytes and load into flights table.
+  """
+  Internal function to process CSV data from bytes and load into flights table.
+  Args:
+    csv_bytes: CSV data as bytes
+    source: Source of the data (e.g., 'api', 'upload', 'email')
     
-    Args:
-        csv_bytes: CSV data as bytes
-        source: Source of the data (e.g., 'api', 'upload', 'email')
-        
-    Returns:
-        dict: {'complete': True, 'total_rows': int, 'rows_processed': int}
-    """
-    start_time = time.time()
+  Returns:
+    dict: {'complete': True, 'total_rows': int, 'rows_processed': int}
+  """
+  start_time = time.time()
   
-#   try:
+  try:
     # Read CSV with different encodings
     try:
         df = pd.read_csv(io.BytesIO(csv_bytes), encoding='utf-8')
@@ -501,10 +511,10 @@ def process_csv_data(csv_bytes, source='api'):
     # Load the new flights to the table
     return save_file(data_list,source=source)
         
-    #   except Exception as e:
-    #     error_msg = f"Error processing CSV data: {str(e)}"
-    #     print(error_msg)
-    #     raise Exception(error_msg)
+  except Exception as e:
+    error_msg = f"Error processing CSV data: {str(e)}"
+    print(error_msg)
+    raise Exception(error_msg)
   
 def de_deuplicate(entry,orig):
     key_columns = [FLT_DATE_COLUMN, TAKEOFF_TIME_COLUMN, REGO_COLUMN]
