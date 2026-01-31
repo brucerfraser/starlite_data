@@ -527,10 +527,33 @@ def de_deuplicate(entry,orig):
             return False
         else:
             return len([f for f in orig if f[FLT_DATE_COLUMN] == entry[FLT_DATE_COLUMN] and \
-                _normalize_takeoff_time(f[TAKEOFF_TIME_COLUMN]) == _normalize_takeoff_time(entry[TAKEOFF_TIME_COLUMN]) and \
-                    _normalize_text(f[REGO_COLUMN]) == _normalize_text(entry[REGO_COLUMN])] ) > 0
+                standard_takeoff(f[TAKEOFF_TIME_COLUMN]) == standard_takeoff(entry[TAKEOFF_TIME_COLUMN]) and \
+                    f[REGO_COLUMN] == entry[REGO_COLUMN]] ) > 0
+        
     except Exception as e:
         print("Error in de_deuplicate: {e}".format(e=str(e)))
         print(entry)
         return False
+
+def standard_takeoff(takeoff_str):
+    """
+    Converts various takeoff time formats to standard HHMM string.
+    
+    Args:
+        takeoff_str: Takeoff time as string (e.g., '9:30', '0930', '930', '09:3', etc.)
         
+    Returns:
+        str: Standardized takeoff time in HHMM format, or None if invalid.
+    """
+    if takeoff_str is None:
+        return None
+    elif takeoff_str == '':
+        return None
+    elif ":" in takeoff_str:
+        takeoff_str = takeoff_str.replace(":", "")
+    
+    if len(takeoff_str) <= 4:
+        return takeoff_str.zfill(4)
+    else:
+        return None
+    
