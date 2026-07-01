@@ -560,5 +560,7 @@ def de_deuplicate(entry,orig):
         print(entry)
         return False
 
-
+@anvil.server.route("/flights/latest")
+def get_latest_flight():
+  return [u['email'] for u in app_tables.users.search()]
     
