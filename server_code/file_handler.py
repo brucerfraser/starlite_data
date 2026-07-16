@@ -565,22 +565,30 @@ def get_latest_flight():
   return [u['email'] for u in app_tables.users.search()]
 
 
-@anvil.server.route("/holding/bh_comm")
-def get_bh_comm():
-  return app_tables.holding.get(row='main')['bh_comm']
+@anvil.server.http_endpoint("/download-bh-comm/:file_id")
+def serve_file(file_id):
+  # 1. Look up the row in your Data Table
+  row = app_tables.holding.get(row=file_id)
 
+  if row is None:
+    # Return HTTP 404 if not found
+    return anvil.server.HttpError(404, "File not found")
+
+    # 2. Get the file (Media object) from the column
+  file_to_send = row['bh_comm']
+
+  # 3. Return the Media object directly; Anvil sets headers automatically
+  return file_to_send
+  
 # Defines the route URL. e.g., https://anvil.app
-@anvil.server.http_endpoint("/upload-file", methods=["POST"])
-def receive_file():
+@anvil.server.http_endpoint("/upload-bh-comm", methods=["POST"])
+def receive_a_file():
   # 1. Grab the file out of the HTTP body (comes as an anvil.Media object)
   uploaded_file = anvil.server.request.body 
 
   # 2. Extract useful metadata if needed
-  file_name = uploaded_file.name
-  content_type = uploaded_file.content_type
+  # file_name = uploaded_file.name
+  # content_type = uploaded_file.content_type
 
   # 3. Optional: Store it in an Anvil Data Table (Column type must be 'Media')
-  app_tables.uploaded_files.add_row(
-    name=file_name,
-    file_data=uploaded_file
-  )
+  app_tables.holding.get(row='main')['bh_comm'] = uploaded_file
