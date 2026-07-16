@@ -565,7 +565,7 @@ def get_latest_flight():
   return [u['email'] for u in app_tables.users.search()]
 
 
-@anvil.server.http_endpoint("/download-bh-comm/:file_id")
+@anvil.server.http_endpoint("/download-bh-comm/:file_id",enable_cors=True)
 def serve_file(file_id):
   # 1. Look up the row in your Data Table
   row = app_tables.holding.get(row=file_id)
@@ -581,7 +581,7 @@ def serve_file(file_id):
   return file_to_send
   
 # Defines the route URL. e.g., https://anvil.app
-@anvil.server.http_endpoint("/upload-bh-comm", methods=["POST"])
+@anvil.server.http_endpoint("/upload-bh-comm", methods=["POST"],enable_cors=True)
 def receive_a_file():
   # 1. Grab the file out of the HTTP body (comes as an anvil.Media object)
   uploaded_file = anvil.server.request.body 
